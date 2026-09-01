@@ -1,0 +1,200 @@
+.comment {
+    -fx-fill: #a0a0a0;
+    -fx-font-style: italic;
+    opacity: 0.55;
+}
+
+/* ============================================================
+   SYNTAX COLOUR SCHEME
+   Word/keyword membership is configured in
+   language.syntax.SyntaxPalette. The colour for each class lives here.
+   ------------------------------------------------------------
+   .identifier  -> ordinary letters / variables    : black
+   .primitive   -> + - * / // ^ ! %  sqrt log frac  : crimson
+   .conditional -> for fend if while return ...     : dark sky blue
+   ============================================================ */
+.identifier {
+    -fx-fill: #000000;
+}
+.primitive {
+    -fx-fill: #dc143c; /* crimson */
+    -fx-font-weight: bold;
+}
+.conditional {
+    -fx-fill: #0c7cba; /* dark sky blue */
+    -fx-font-weight: bold;
+}
+/* Docstring / string-literal content -> teal */
+.string {
+    -fx-fill: #008b8b; /* teal */
+}
+.number {
+    -fx-fill: #8c2a2a;
+}
+/* Legacy classes kept for backward compatibility (tokenizer no longer
+   emits these, but harmless if referenced elsewhere). */
+.keyword {
+    -fx-fill: #0c7cba;
+    -fx-font-weight: bold;
+}
+.operator {
+    -fx-fill: #000000;
+}
+
+/* sub/superscript rules below — specificity set deliberately;
+   full overrides are in .code-area .* block after .code-area .text */
+
+/* ====== CodeArea / Editor Styling ====== */
+
+/* Line number gutter (VS Code style) */
+.lineno {
+    -fx-font-family: Consolas;
+    -fx-font-size: 13px;
+    -fx-fill: #858585;
+    -fx-background-color: #f3f3f3;
+    -fx-padding: 0 12 0 8;
+    -fx-text-alignment: right;
+}
+
+/* CodeArea paragraph (line) styling - increased line height */
+.code-area .paragraph-box {
+    -fx-padding: 2 0 2 0;
+}
+
+/* Code folding (see ui.editor.FoldingManager) uses CodeArea's own native
+   paragraph folding (foldParagraphs/unfoldParagraphs/isFolded, inherited from
+   StyleClassedTextArea) — RichTextFX already renders a folded paragraph at
+   zero height itself, so no custom CSS is needed here. */
+
+.code-area .paragraph-text {
+    -fx-line-spacing: 4px;
+}
+
+/* Step feature (see ui.editor.step.StepController): highlights the most
+   recently executed step's line range. Paragraph style classes land on the
+   ParagraphText (a TextFlow, default class "paragraph-text") — NOT on the
+   outer "paragraph-box" — confirmed the same way as the folding CSS above
+   was debugged; do not "simplify" this selector without re-checking that. */
+.code-area .paragraph-text.step-current-line {
+    -fx-background-color: rgba(255, 193, 7, 0.18);
+}
+
+/* CodeArea main styling */
+.code-area {
+    -fx-background-color: #ffffff;
+    -fx-font-family: Consolas;
+    -fx-font-size: 14px;
+}
+
+.code-area .text {
+    -fx-font-family: Consolas;
+    -fx-font-size: 14px;
+}
+
+/* ====== Sub/Superscript sizing — must come AFTER .code-area .text to win the cascade ====== */
+
+.code-area .subscript-single {
+    -fx-font-size: 65%;
+    -fx-translate-y: 3px;
+    -fx-translate-x: 0em;
+}
+
+.code-area .subscript-greek {
+    -fx-font-size: 65%;
+    -fx-translate-y: 3px;
+    -fx-translate-x: 0em;
+}
+
+.code-area .subscript-greek-single {
+    -fx-font-size: 65%;
+    -fx-translate-y: 3px;
+    -fx-translate-x: 0em;
+}
+
+.code-area .subscript-greek-multi {
+    -fx-font-size: 65%;
+    -fx-translate-y: 3px;
+    -fx-translate-x: 0em;
+}
+
+.code-area .subscript-multi {
+    -fx-font-size: 65%;
+    -fx-translate-y: 3px;
+    -fx-translate-x: 0em;
+}
+
+.code-area .superscript-single {
+    -fx-font-size: 55%;
+    -fx-translate-y: -6px;
+    -fx-translate-x: -1.75em;
+}
+
+.code-area .superscript-greek {
+    -fx-font-size: 55%;
+    -fx-translate-y: -6px;
+    -fx-translate-x: 0.25em;
+}
+
+.code-area .superscript-greek-single {
+    -fx-font-size: 55%;
+    -fx-translate-y: -6px;
+    -fx-translate-x: -1.75em;
+}
+
+.code-area .superscript-greek-multi {
+    -fx-font-size: 55%;
+    -fx-translate-y: -6px;
+    -fx-translate-x: 0.25em;
+}
+
+.code-area .superscript-multi {
+    -fx-font-size: 55%;
+    -fx-translate-y: -6px;
+    -fx-translate-x: 0em;
+}
+
+/* Caret styling */
+.code-area .caret {
+    -fx-stroke: #000000;
+    -fx-stroke-width: 1.5;
+}
+
+/* Selection styling */
+.code-area .selection {
+    -fx-fill: #add6ff;
+}
+
+/* Variable explorer variable-name styling */
+.variable-explorer .text {
+    -fx-font-family: Consolas;
+    -fx-font-size: 13px;
+}
+
+.variable-explorer .subscript-single,
+.variable-explorer .subscript-greek,
+.variable-explorer .subscript-greek-single,
+.variable-explorer .subscript-greek-multi,
+.variable-explorer .subscript-multi {
+    -fx-font-family: Consolas;
+    -fx-font-size: 65%;
+    -fx-translate-y: 3px;
+    -fx-translate-x: 0em;
+}
+
+.variable-explorer .superscript-single,
+.variable-explorer .superscript-greek,
+.variable-explorer .superscript-greek-single,
+.variable-explorer .superscript-greek-multi,
+.variable-explorer .superscript-multi {
+    -fx-font-family: Consolas;
+    -fx-font-size: 55%;
+    -fx-translate-y: -6px;
+    -fx-translate-x: 0em;
+}
+
+.variable-explorer .subscript-superscript {
+    -fx-font-family: Consolas;
+    -fx-font-size: 55%;
+    -fx-translate-y: -1px;
+    -fx-translate-x: 0em;
+}
