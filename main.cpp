@@ -276,6 +276,21 @@ int main(int argc, char *argv[])
       {
         parser.loadFromFile();
       }
+      // ============================================================
+      // NEW (Step feature): completion sentinel. The Java IDE sends this
+      // as the line immediately after a "step unit"'s real content; since
+      // stdin is a single ordered stream consumed by this one loop, this
+      // marker can only reach stdout after everything sent before it has
+      // actually finished executing. Java's stdout reader watches for
+      // "@STEPMARK <token>" to know precisely when that step is done.
+      // ============================================================
+      else if (cmd.rfind("stepmark ", 0) == 0)
+      {
+        std::string token = cmd.substr(9);
+        while (!token.empty() && std::isspace(static_cast<unsigned char>(token.back())))
+          token.pop_back();
+        std::cout << "@STEPMARK " << token << std::endl;
+      }
       continue;
     }
 
