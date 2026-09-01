@@ -1,0 +1,856 @@
+/* ========== ROOT ========== */
+.root {
+    -fx-font-family: "Consolas", "Segoe UI", monospace;
+    -fx-background-color: #1e1e1e;
+    -fx-text-fill: #d4d4d4;
+}
+
+/* ========== GLOBAL LAYOUT ========== */
+.region,
+.pane,
+.stack-pane,
+.border-pane,
+.anchor-pane,
+.vbox,
+.hbox,
+.split-pane {
+    -fx-background-color: #1e1e1e;
+}
+
+/* ========== SPLIT PANE DIVIDER ========== */
+.split-pane-divider {
+    -fx-background-color: #333333;
+}
+
+/* ========== SIDEBAR (PROJECT EXPLORER) ========== */
+.tree-view {
+    -fx-background-color: #252526;
+    -fx-control-inner-background: #252526;
+}
+
+.tree-view .virtual-flow,
+.tree-view .corner {
+    -fx-background-color: #252526;
+}
+
+.tree-cell {
+    -fx-text-fill: #dddddd;
+    -fx-background-color: transparent;
+}
+
+.tree-cell:hover {
+    -fx-background-color: #2a2d2e;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #094771;
+    -fx-text-fill: white;
+}
+
+/* ========== TOOLBAR ========== */
+.tool-bar {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: #3c3c3c;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 6;
+}
+
+/* ========== BUTTONS ========== */
+.button,
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #cccccc;
+}
+
+.button:hover,
+.menu-button:hover {
+    -fx-background-color: #3c3c3c;
+}
+
+.button:pressed {
+    -fx-background-color: #007acc;
+    -fx-text-fill: white;
+}
+
+/* ========== LABELS ========== */
+.label {
+    -fx-text-fill: #cccccc;
+}
+
+/* ========== TEXT AREA (EDITOR + TERMINAL) ========== */
+.text-area {
+    -fx-control-inner-background: #1e1e1e;
+    -fx-text-fill: #d4d4d4;
+    -fx-highlight-fill: #264f78;
+    -fx-highlight-text-fill: white;
+    -fx-border-color: #2a2a2a;
+    -fx-font-size: 13px;
+}
+
+.console-area.console-error {
+    -fx-text-fill: #ef9a9a;
+}
+
+/* console-error-range removed when using TextArea inline styling */
+
+.text-area .caret {
+    -fx-background-color: white;
+}
+
+/* ========== INPUT FIELDS ========== */
+.text-field,
+.password-field {
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #555;
+}
+
+/* ========== TAB PANE (EDITOR AREA) ========== */
+.tab-pane,
+.tab-pane .tab-header-area,
+.tab-pane .tab-header-background {
+    -fx-background-color: #2d2d2d;
+}
+
+.tab {
+    -fx-background-color: #2d2d2d;
+    -fx-text-base-color: #bbbbbb;
+}
+
+.tab:selected {
+    -fx-background-color: #1e1e1e;
+    -fx-text-base-color: white;
+}
+
+/* Fix white inside tab content */
+.tab-pane .viewport,
+.tab-pane .tab-content-area,
+.tab-pane .content {
+    -fx-background-color: #1e1e1e;
+}
+
+/* ========== SCROLL PANE (IMPORTANT FIX) ========== */
+.scroll-pane,
+.scroll-pane .viewport,
+.scroll-pane .content {
+    -fx-background-color: #1e1e1e;
+}
+
+/* ========== CODE EDITOR (RichTextFX CodeArea) ========== */
+.code-area {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: transparent;
+}
+
+.code-area .text {
+    -fx-fill: #d4d4d4;
+}
+
+.code-area .caret {
+    -fx-stroke: #ffffff;
+}
+
+.code-area .selection {
+    -fx-fill: #264f78;
+}
+
+/* ========== TABLE VIEW (VARIABLE PANEL) ========== */
+.table-view {
+    -fx-background-color: #1e1e1e;
+    -fx-control-inner-background: #1e1e1e;
+    -fx-border-color: #333333;
+}
+
+.table-view .virtual-flow,
+.table-view .corner,
+.table-view .placeholder {
+    -fx-background-color: #1e1e1e;
+}
+
+.table-row-cell {
+    -fx-background-color: #1e1e1e;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #2a2d2e;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #094771;
+}
+
+.variable-explorer-table {
+    -fx-table-cell-border-color: #2f2f2f;
+}
+
+.variable-explorer-table .table-row-cell {
+    -fx-background-insets: 0;
+    -fx-border-color: transparent transparent #2d2d2d transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.variable-explorer-table .table-row-cell:odd {
+    -fx-background-color: #232323;
+}
+
+.variable-explorer-table .table-row-cell:even {
+    -fx-background-color: #1e1e1e;
+}
+
+.variable-explorer-table .table-row-cell:hover {
+    -fx-background-color: #2a2d2e;
+}
+
+.variable-explorer-table .table-row-cell:selected {
+    -fx-background-color: #094771;
+}
+
+.table-cell {
+    -fx-text-fill: #ffffff;
+}
+
+/* Table header */
+.column-header-background,
+.column-header {
+    -fx-background-color: #2d2d2d;
+    -fx-text-fill: #cccccc;
+}
+
+.variable-explorer Text,
+.variable-explorer .text {
+    -fx-fill: #ffffff;
+}
+
+
+
+/* ========== SCROLL BAR ========== */
+.scroll-bar {
+    -fx-background-color: #1e1e1e;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #3c3c3c;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #555555;
+}
+
+/* ========== CONTEXT MENU ========== */
+.context-menu {
+    -fx-background-color: #252526;
+    -fx-border-color: #3c3c3c;
+}
+
+.menu-item {
+    -fx-text-fill: #cccccc;
+}
+
+.menu-item:focused {
+    -fx-background-color: #094771;
+}
+
+/* ========== TOOLTIP ========== */
+.tooltip {
+    -fx-background-color: #252526;
+    -fx-text-fill: white;
+    -fx-border-color: #3c3c3c;
+}
+
+/* ========== QUICK PATH BAR (FILE PATH) ========== */
+.quick-path-box {
+    -fx-font-size: 11;
+    -fx-padding: 4 8;
+    -fx-background-color: #2b2b2b;
+    -fx-border-color: #555;
+    -fx-text-fill: #dddddd;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.quick-access-bar {
+    -fx-background-color: #232323;
+    -fx-border-color: #3a3a3a;
+    -fx-border-width: 0 0 1 0;
+}
+
+.quick-access-bar .separator .line {
+    -fx-border-color: transparent;
+}
+
+.quick-nav-menu .arrow-button {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
+    -fx-opacity: 0;
+}
+
+.quick-nav-menu .arrow {
+    -fx-padding: 0;
+    -fx-shape: "";
+}
+
+.quick-path-segment {
+    -fx-font-size: 11;
+    -fx-text-fill: #dddddd;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0 4 0 4;
+}
+
+.quick-path-segment:hover {
+    -fx-background-color: #323232;
+    -fx-background-radius: 3;
+}
+
+.quick-path-separator {
+    -fx-font-size: 11;
+    -fx-text-fill: #8c8c8c;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0 2 0 2;
+}
+
+.quick-path-empty {
+    -fx-text-fill: #9f9f9f;
+}
+
+/* ========== FINAL FORCE (NO WHITE ANYWHERE) ========== */
+.border-pane>.center,
+.border-pane>.right,
+.border-pane>.bottom,
+.border-pane>.left {
+    -fx-background-color: #1e1e1e;
+}
+/* ========== ROW-1 RIBBON TAB BAR (compact, boxed active tab) ========== */
+/* Text-only tabs sitting on the navy ribbon (ToolbarState.BG).            */
+/* The SELECTED tab is a clean BOX with a border on ALL FOUR sides         */
+/* (top, bottom, left, right) and slightly rounded corners - matching the  */
+/* original design. No blue edge accents.                                  */
+.ribbon-tab {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-font-size: 12;
+    -fx-padding: 3 16 3 16;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+}
+.ribbon-tab:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+    -fx-background-radius: 3;
+}
+.ribbon-tab:selected {
+    -fx-background-color: #3c3c3c;          /* dark grey box                */
+    -fx-background-insets: 0;
+    -fx-background-radius: 3;
+    -fx-text-fill: #ffffff;
+    -fx-border-color: #6a6a6a;              /* border on ALL four sides     */
+    -fx-border-radius: 3;
+    -fx-border-width: 1;
+}
+.ribbon-tab:selected:hover {
+    -fx-background-color: #3c3c3c;
+}
+
+/* ========== ROW-2 MENU-ITEM PANEL (Tasks 2 & 3) ========== */
+/* Dark panel behind the menu items so it matches the dark theme  */
+/* instead of staying white. Colours live here, not in Java.      */
+.menu-panel {
+    -fx-background-color: #2d2d2d;
+}
+.menu-toolbar {
+    -fx-background-color: #2d2d2d;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 4 8 4 8;
+}
+/* Menu buttons (New, Open, Save, Run, Plot, Neural Link, Stop):  */
+/* transparent so the panel shows through, light readable text.   */
+.menu-toolbar .menu-item-button,
+.menu-item-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #d4d4d4;
+}
+.menu-toolbar .menu-item-button:hover,
+.menu-item-button:hover {
+    -fx-background-color: #3c3c3c;
+    -fx-background-radius: 4;
+}
+/* Keep the New MenuButton's dropdown arrow visible/light.        */
+.menu-item-button .arrow {
+    -fx-background-color: #d4d4d4;
+}
+/* Compact horizontal action button (theme-aware). */
+.compact-action-button {
+    -fx-background-color: #3a3a3a;
+    -fx-border-color: #555555;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-text-fill: #e0e0e0;
+    -fx-font-size: 11;
+    -fx-padding: 3 10;
+}
+.compact-action-button:hover {
+    -fx-background-color: #474747;
+}
+/* =====================================================================
+   HOME RIBBON COMPARTMENTS  --  append to src/main/resources/themes/dark.css
+   =====================================================================
+   Same class set as the light block, different palette.
+
+   NOTE on the divider: you asked for a line darker than the toolbar
+   background. That reads well on the light panel, but on a dark panel a
+   darker line disappears. The dark theme therefore uses a slightly
+   LIGHTER line to preserve the intent -- a mild, visible division. If you
+   prefer it literally darker, use #171c22 on the line marked (*).
+   ===================================================================== */
+
+.home-ribbon-toolbar {
+    -fx-padding: 4 10 4 10;
+    -fx-spacing: 0;
+}
+
+.home-ribbon-root {
+    -fx-background-color: transparent;
+}
+
+.ribbon-group {
+    -fx-background-color: transparent;
+    -fx-padding: 0 4 0 4;
+}
+
+/* (*) Mild divider, lighter than the dark panel so it stays visible. */
+.ribbon-group-separator {
+    -fx-background-color: #414b55;
+}
+
+.ribbon-group-caption {
+    -fx-text-fill: #a9b4bf;
+    -fx-font-size: 11px;
+    -fx-padding: 0 2 0 2;
+}
+
+.ribbon-item-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4;
+    -fx-text-fill: #e6e6e6;
+    -fx-font-size: 11.5px;
+    -fx-padding: 2 2 2 2;
+    -fx-cursor: hand;
+}
+
+.ribbon-item-button:hover {
+    -fx-background-color: #2e3742;
+}
+
+.ribbon-item-button:pressed,
+.ribbon-item-button:showing {
+    -fx-background-color: #3a4552;
+}
+
+.ribbon-menu-button > .arrow-button {
+    -fx-padding: 0;
+}
+
+.ribbon-menu-button > .arrow-button > .arrow {
+    -fx-background-color: #a9b4bf;
+    -fx-padding: 2 3 2 3;
+}
+
+.ribbon-readout-stack {
+    -fx-padding: 0 6 0 6;
+}
+
+.ribbon-readout {
+    -fx-background-color: #1b2128;
+    -fx-background-radius: 4;
+    -fx-border-color: #414b55;
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+    -fx-padding: 1 8 1 8;
+}
+
+.ribbon-readout-title {
+    -fx-font-size: 9.5px;
+    -fx-text-fill: #93a1ae;
+}
+
+.ribbon-readout-value {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4fc3f7;
+}
+
+.ribbon-free-space {
+    -fx-background-color: transparent;
+}
+/* ========== RIBBON End (HOME) ========== */  
+
+
+
+/*////////////////////////////////////////////////////////////////// 
+/* ========== Variable Explorer & File Explorer ========== */ 
+/* ---- Side panel title strips (File / Variable Explorer) ---- */
+
+/* ---- Side panel title strips (File / Variable Explorer) ---- */
+/* ---- Side panel title strips (File / Variable Explorer) ---- */
+.panel-title-bar {
+    -fx-padding: 0 4 0 8;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Selected panel: navy. Everything else: grey. PanelActivation swaps the
+   .panel-active / .panel-inactive class as the user clicks around. */
+.panel-title-bar.panel-active {
+    -fx-background-color: #004073;
+    -fx-border-color: transparent transparent #003057 transparent;
+}
+
+.panel-title-bar.panel-inactive {
+    -fx-background-color: #333a41;
+    -fx-border-color: transparent transparent #262c33 transparent;
+}
+
+.panel-title-label,
+.panel-rail-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.panel-active .panel-title-label,
+.panel-active .panel-rail-label {
+    -fx-text-fill: #ffffff;
+}
+
+.panel-inactive .panel-title-label,
+.panel-inactive .panel-rail-label {
+    -fx-text-fill: #cfd6dd;
+}
+
+/* The collapse triangle and the three-dot options button. */
+.panel-title-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 3;
+    -fx-padding: 1;
+    -fx-cursor: hand;
+}
+
+.panel-active .panel-title-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.20);
+}
+
+.panel-inactive .panel-title-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+}
+
+/* Collapsed vertical rail (border moves from the bottom to the right edge). */
+.panel-rail {
+    -fx-padding: 4 0 6 0;
+    -fx-border-width: 0 1 0 0;
+}
+
+.panel-rail.panel-active {
+    -fx-border-color: transparent #003057 transparent transparent;
+}
+
+.panel-rail.panel-inactive {
+    -fx-border-color: transparent #262c33 transparent transparent;
+}
+
+.panel-rail-label {
+    -fx-font-size: 11px;
+}
+
+.titled-panel {
+    -fx-background-color: transparent;
+}
+
+/* ---- Tool-band collapse toggle in the quick-access bar ---- */
+.quick-bar-toggle {
+    -fx-background-color: transparent;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+}
+
+.quick-bar-toggle:hover {
+    -fx-background-color: #323232;
+}
+
+/* =====================================================================
+   HOME RIBBON -- Files split buttons
+   =====================================================================
+   Same class set as the light block, different palette. See the light
+   theme for what each zone does.
+   ===================================================================== */
+
+.ribbon-split-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.ribbon-split-button:hover {
+    -fx-background-color: #2b333d;
+    -fx-border-color: #47535f;
+}
+
+/* Default-action zone: the icon only. */
+.ribbon-split-icon-zone {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4 4 0 0;
+    -fx-padding: 4 3 2 3;
+}
+
+.ribbon-split-icon-zone:hover {
+    -fx-background-color: #3a4652;
+}
+
+.ribbon-split-icon-zone:pressed {
+    -fx-background-color: #4a5866;
+}
+
+/* Drop-down zone: the label and the triangle beneath it. */
+.ribbon-split-menu-zone {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 0 4 4;
+    -fx-padding: 1 3 3 3;
+}
+
+.ribbon-split-menu-zone:hover {
+    -fx-background-color: #3a4652;
+}
+
+.ribbon-split-menu-zone:pressed,
+.ribbon-split-menu-zone.menu-showing {
+    -fx-background-color: #4a5866;
+}
+
+.ribbon-split-arrow {
+    -fx-background-color: #b9c4cf;
+    -fx-shape: "M 0 0 L 9 0 L 4.5 5.5 Z";
+    -fx-scale-shape: false;
+    -fx-min-width: 9;
+    -fx-pref-width: 9;
+    -fx-max-width: 9;
+    -fx-min-height: 6;
+    -fx-pref-height: 6;
+    -fx-max-height: 6;
+}
+
+.ribbon-split-label {
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #e6e6e6;
+}
+
+/* =====================================================================
+   SIGNALS RIBBON  --  append to src/main/resources/themes/dark.css
+   =====================================================================
+   Same class set as the light block, different palette. See the light
+   theme for what each zone does. The compare zone keeps its green, pitched
+   down to a depth that sits on a #2d2d2d panel instead of glowing off it.
+   ===================================================================== */
+
+/* The band. The 20px of horizontal padding is assumed by
+   RibbonLayout.TOOLBAR_H_INSET, which SignalLayout also uses -- keep this in
+   step with .home-ribbon-toolbar or the 14-unit ratios drift. */
+.signal-ribbon-toolbar {
+    -fx-padding: 4 10 4 10;
+    -fx-spacing: 0;
+}
+
+.signal-ribbon-root {
+    -fx-background-color: transparent;
+}
+
+/* ---------------------------------------------------------------------
+   The Select 1 / Select 2 / Compare control.
+
+     .ribbon-compare-select-zone   x2, side by side -> each opens a menu
+     .ribbon-compare-action-zone   full width beneath -> runs the compare
+
+   Unlike the Files split button these zones are filled at rest rather than
+   transparent. Three targets in the width of one ribbon item need their
+   edges drawn, not merely implied on hover. The outer rectangle still
+   lights as a whole, and the zone under the pointer still takes a stronger
+   fill, so it stays obvious which third a click will hit.
+   --------------------------------------------------------------------- */
+
+.ribbon-compare-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+
+.ribbon-compare-button:hover {
+    -fx-background-color: #2b333d;
+    -fx-border-color: #47535f;
+}
+
+/* The two selectors. */
+.ribbon-compare-select-zone {
+    -fx-background-color: #343d49;
+    -fx-background-radius: 3;
+    -fx-padding: 0 5 0 6;
+}
+
+.ribbon-compare-select-zone:hover {
+    -fx-background-color: #3f4b59;
+}
+
+.ribbon-compare-select-zone:pressed,
+.ribbon-compare-select-zone.menu-showing {
+    -fx-background-color: #4a5866;
+}
+
+.ribbon-compare-label {
+    -fx-font-size: 10.5px;
+    -fx-text-fill: #e6e6e6;
+}
+
+.ribbon-compare-arrow {
+    -fx-background-color: #b9c4cf;
+    -fx-shape: "M 0 0 L 8 0 L 4 5 Z";
+    -fx-scale-shape: false;
+    -fx-min-width: 8;
+    -fx-pref-width: 8;
+    -fx-max-width: 8;
+    -fx-min-height: 5;
+    -fx-pref-height: 5;
+    -fx-max-height: 5;
+}
+
+/* The action zone. The only tinted control in either band: it is the one
+   place in the ribbon that opens a working window rather than a
+   placeholder, and the green marks it as the live third of the span. */
+.ribbon-compare-action-zone {
+    -fx-background-color: #1e4536;
+    -fx-background-radius: 3;
+    -fx-border-color: #2f6b51;
+    -fx-border-radius: 3;
+    -fx-border-width: 1;
+}
+
+.ribbon-compare-action-zone:hover {
+    -fx-background-color: #275540;
+}
+
+.ribbon-compare-action-zone:pressed {
+    -fx-background-color: #316b51;
+}
+
+/* Both selectors still empty: nothing to compare yet. */
+.ribbon-compare-action-zone.disabled {
+    -fx-background-color: #2a3038;
+    -fx-border-color: #3a424c;
+}
+
+.ribbon-compare-action-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7fd6aa;
+}
+
+.ribbon-compare-action-zone.disabled .ribbon-compare-action-label {
+    -fx-text-fill: #7d868f;
+}
+
+/* ---------------------------------------------------------------------
+   The comparison window (UI_Signal_SensorCompare_Main and its actuator
+   twin). Title bar and footer are inline-styled navy and light grey; what
+   is left for the theme is the control strip and the charts.
+   --------------------------------------------------------------------- */
+
+.signal-compare-controls {
+    -fx-background-color: #262b31;
+    -fx-border-color: transparent transparent #3a424c transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.signal-compare-controls-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #9aa5b1;
+}
+
+.signal-compare-toggle {
+    -fx-background-color: #2f353d;
+    -fx-background-radius: 3;
+    -fx-border-color: #4a535d;
+    -fx-border-radius: 3;
+    -fx-border-width: 1;
+    -fx-text-fill: #dfe4e9;
+    -fx-font-size: 11px;
+    -fx-padding: 2 14 2 14;
+    -fx-cursor: hand;
+}
+
+.signal-compare-toggle:hover {
+    -fx-background-color: #3a424c;
+}
+
+.signal-compare-toggle:selected {
+    -fx-background-color: #1f6fb2;
+    -fx-border-color: #1f6fb2;
+    -fx-text-fill: #ffffff;
+}
+
+.signal-compare-chart {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+}
+
+.signal-compare-chart .chart-plot-background {
+    -fx-background-color: #232a31;
+}
+
+.signal-compare-chart .chart-vertical-grid-lines,
+.signal-compare-chart .chart-horizontal-grid-lines {
+    -fx-stroke: #333c45;
+}
+
+.signal-compare-chart .axis {
+    -fx-tick-label-fill: #9aa5b1;
+    -fx-font-size: 10px;
+}
+
+.signal-compare-chart .axis-label {
+    -fx-text-fill: #a9b4bf;
+}
+
+.signal-compare-chart .chart-series-line {
+    -fx-stroke-width: 1.6;
+}
+
+.signal-compare-chart .default-color0.chart-series-line {
+    -fx-stroke: #5cb3f0;
+}
+
+.signal-compare-chart .default-color1.chart-series-line {
+    -fx-stroke: #e5895c;
+}
+
+/* Split view puts one series in each chart, so the lower one would
+   otherwise repeat the first series colour. */
+.signal-compare-chart.series-b .default-color0.chart-series-line {
+    -fx-stroke: #e5895c;
+}
+
+.signal-compare-chart .chart-legend {
+    -fx-background-color: transparent;
+}
+
+.signal-compare-chart .chart-legend-item {
+    -fx-text-fill: #cfd6dd;
+    -fx-font-size: 11px;
+}
+/* ========== SIGNALS RIBBON End ========== */
