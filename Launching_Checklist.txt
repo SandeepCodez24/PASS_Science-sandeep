@@ -1,0 +1,42 @@
+Launching Checklist (in vscode powershell):
+
+1. "java -version" shows 25.0.4 ✔
+
+2. "echo $env:JAVA_HOME" → C:\\Program Files\\Java\\jdk-25.0.4 ✔
+
+3. "mvn clean compile" → After mvn compile, jars appear under build\\local-maven-repo\\org\\openjfx\\... ✔
+
+4. "mvn javafx:run" and the Run button both open the window ✔
+#####################################################################
+Solution:
+
+1. set "JAVA_HOME" path in the "Environment Variables Setting" as "C:\Program Files\Java\jdk-25.0.4"
+#####################################################################
+2. "Preferences: Open User Settings (JSON)" by crtl+shift+p in VS Code:
+-------------------------------------------------------------
+{
+  "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-25.0.4",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-25",
+      "path": "C:\\Program Files\\Java\\jdk-25.0.4",
+      "default": true
+    }
+  ]
+}
+-------------------------------------------------------------
+#####################################################################
+
+3. Run this command in your VS Code PowerShell terminal to set JAVA_HOME permanently for your user account:
+
+
+PowerShell (VS code) :
+
+
+
+"[System.Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\Program Files\Java\jdk-25.0.4', 'User')"
+
+
+
+Verify JAVA_HOME in PowerShell by "$env:JAVA_HOME"
+#####################################################################

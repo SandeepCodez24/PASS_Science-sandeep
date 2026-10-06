@@ -1,0 +1,191 @@
+===============================================================================
+ BUILDING nc.exe (C++ back end) IN A NEW OR COPIED REPOSITORY FOLDER
+ Toolchain: in-house LLVM 21 (clang++ / lld-link / llvm-ar / ninja) - no MSVC
+ compiler, no gcc.
+===============================================================================
+
+In the steps below, <NEW_REPO> means the full path of the new folder, e.g.
+    D:\My Research Works\PASS Science Works\Main_Repository\Astra_UniPro_02
+
+
+-------------------------------------------------------------------------------
+ 0. WHY "cmake --build build/nc-build" CANNOT RUN STRAIGHT AWAY IN A COPY
+-------------------------------------------------------------------------------
+build\nc-build\CMakeCache.txt stores ABSOLUTE paths: the source folder, the
+toolchain folder and the compiler paths all point at the ORIGINAL repo. In a
+copied or renamed folder CMake stops with an error such as:
+
+    "The current CMakeCache.txt directory ... is different than the directory
+     ... where CMakeCache.txt was created."
+
+or, worse, it silently keeps using the toolchain of the original folder.
+So in every new location:
+    -> delete build\nc-build
+    -> configure once  (cmake -S ... -B ...)
+    -> after that, "cmake --build build/nc-build" works as usual.
+
+
+-------------------------------------------------------------------------------
+ 1. ONE-TIME CHECKS (only once per machine - already done on this PC)
+-------------------------------------------------------------------------------
+  - Visual Studio 2022 Build Tools installed (C++ workload + Windows SDK).
+    Needed for the C++ standard library headers, the Windows SDK libraries
+    and rc.exe. The MSVC compiler (cl.exe) itself is NOT used.
+  - CMake installed (3.20 or newer; this PC has 4.4).
+  - Allow local PowerShell scripts (once per user):
+        Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+
+-------------------------------------------------------------------------------
+ 2. MAKE SURE THE NEW FOLDER HAS EVERYTHING
+-------------------------------------------------------------------------------
+Copy or clone the repo to <NEW_REPO>, then check these three items. The first
+two may be missing after a "git clone", because they may not be in git.
+
+  a) The toolchain:  <NEW_REPO>\build\toolchain\bin\clang++.exe
+     If missing, copy the whole folder from the original repo:
+        Copy-Item -Recurse "<OLD_REPO>\build\toolchain" "<NEW_REPO>\build\toolchain"
+
+     (Alternative: keep ONE toolchain in a fixed place, e.g. D:\Toolchains\
+      nc-llvm21, and point NC_TOOLCHAIN_ROOT there in step 3. Then copies of
+      the repo do not need their own toolchain.)
+
+  b) The toolchain file:  <NEW_REPO>\cmake\clang-windows.cmake
+     If missing, copy it from the original repo:
+        New-Item -ItemType Directory -Force "<NEW_REPO>\cmake" | Out-Null
+        Copy-Item "<OLD_REPO>\cmake\clang-windows.cmake" "<NEW_REPO>\cmake\"
+
+  c) The C++ sources:  <NEW_REPO>\src\main\cpp\CMakeLists.txt
+
+  Do NOT copy build\nc-build from the old repo. If it came along with the
+  copy, it is deleted in step 4.
+
+  CAUTION: the toolchain lives inside build\. Never delete the whole build\
+  folder - only build\nc-build.
+
+
+-------------------------------------------------------------------------------
+ 3. SET UP THE TERMINAL  (needed in EVERY new PowerShell window)
+-------------------------------------------------------------------------------
+Nothing below persists after the window is closed. Run in this order:
+
+  # 3.1 Enter the VS developer shell (gives STL headers, SDK libs, rc.exe).
+  #     It changes the current folder, so cd comes AFTER it.
+  & "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -HostArch amd64
+
+  # 3.2 Go to the new repo root
+  cd "<NEW_REPO>"
+
+  # 3.3 Point at the toolchain and put it first on PATH
+  $env:NC_TOOLCHAIN_ROOT = "$PWD\build\toolchain"
+  $env:PATH = "$env:NC_TOOLCHAIN_ROOT\bin;$env:PATH"
+
+  # 3.4 Quick checks
+  Test-Path "$env:NC_TOOLCHAIN_ROOT\bin\clang++.exe"   # must print True
+  clang++ --version                                    # clang version 21.1.6
+                                                       # Target: x86_64-pc-windows-msvc
+  Get-Command rc.exe | Select-Object Source            # ...\Windows Kits\10\bin\...\rc.exe
+
+
+-------------------------------------------------------------------------------
+ 4. FIRST BUILD IN THE NEW FOLDER  (configure + build)
+-------------------------------------------------------------------------------
+  # 4.1 Remove any old/copied build cache (safe if it does not exist)
+  Remove-Item -Recurse -Force build\nc-build -ErrorAction SilentlyContinue
+
+  # 4.2 Configure - keep it on ONE line
+  cmake -S src/main/cpp -B build/nc-build -G Ninja --toolchain "$PWD\cmake\clang-windows.cmake" -DCMAKE_BUILD_TYPE=Release
+
+      Expected:  -- The CXX compiler identification is Clang 21.1.6 with GNU-like command-line
+      If it says MSVC: -G Ninja or --toolchain is missing, or build\nc-build
+      was not deleted.
+
+  # 4.3 Build
+  cmake --build build/nc-build
+
+  # 4.4 Result: nc.exe is written to  <NEW_REPO>\src\main\cpp\nc.exe
+  #     (not into build\nc-build). Quick test:
+  & ".\src\main\cpp\nc.exe"        # should show the ">> " prompt
+
+
+-------------------------------------------------------------------------------
+ 5. LATER BUILDS IN THE SAME FOLDER
+-------------------------------------------------------------------------------
+  - Open a terminal and do step 3 (developer shell + environment variables).
+  - Then just:
+        cmake --build build/nc-build
+  - Repeat step 4 (delete build\nc-build + configure) ONLY when:
+        * the repo folder is moved, copied or renamed,
+        * the toolchain folder changes,
+        * clang-windows.cmake or the build type (Release/Debug) changes,
+        * a new .cpp file is not being picked up / CMakeLists.txt changed a lot.
+
+
+-------------------------------------------------------------------------------
+ 6. DEBUG BUILD (optional)
+-------------------------------------------------------------------------------
+  Use a separate build folder so Release and Debug do not overwrite each other's
+  cache:
+  cmake -S src/main/cpp -B build/nc-build-debug -G Ninja --toolchain "$PWD\cmake\clang-windows.cmake" -DCMAKE_BUILD_TYPE=Debug
+  cmake --build build/nc-build-debug
+  NOTE: the CMakeLists writes nc.exe to src\main\cpp\ for both, so the last
+  build wins.
+
+
+-------------------------------------------------------------------------------
+ 7. COPY-PASTE BLOCK  (steps 3 + 4 together; edit the cd line only)
+-------------------------------------------------------------------------------
+& "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -HostArch amd64
+cd "<NEW_REPO>"
+$env:NC_TOOLCHAIN_ROOT = "$PWD\build\toolchain"
+$env:PATH = "$env:NC_TOOLCHAIN_ROOT\bin;$env:PATH"
+Remove-Item -Recurse -Force build\nc-build -ErrorAction SilentlyContinue
+cmake -S src/main/cpp -B build/nc-build -G Ninja --toolchain "$PWD\cmake\clang-windows.cmake" -DCMAKE_BUILD_TYPE=Release
+cmake --build build/nc-build
+
+
+-------------------------------------------------------------------------------
+ 8. TROUBLESHOOTING  (all of these were met during the first setup)
+-------------------------------------------------------------------------------
+ Symptom                                   Cause / fix
+ ----------------------------------------  ------------------------------------
+ "Building for: Visual Studio 17 2022" /   Generator not given. Delete
+ compiler identification is MSVC           build\nc-build, configure with
+                                           -G Ninja --toolchain ...
+
+ 'clang++' is not recognized               NC_TOOLCHAIN_ROOT points to a wrong
+                                           folder. It must be the folder that
+                                           CONTAINS bin\ (not bin itself).
+
+ Could not find toolchain file             cmake\clang-windows.cmake missing, or
+ "cmake/clang-windows.cmake"               relative path used. Always pass
+                                           "$PWD\cmake\clang-windows.cmake".
+
+ CMake was unable to find a build          Knock-on error of a failed configure.
+ program corresponding to "Ninja"          Fix the first error, delete
+                                           build\nc-build, configure again.
+
+ No CMAKE_RC_COMPILER could be found       Not in the VS developer shell (3.1).
+ 'iostream' file not found /               Same - run step 3.1 first.
+ cannot open kernel32.lib
+
+ lld-link: permission denied               clang resolved the D: alias to
+                                           C:\D-Drive\D\... . Already handled by
+                                           -no-canonical-prefixes in
+                                           clang-windows.cmake - make sure the
+                                           copy has the UPDATED file.
+
+ no such file or directory: 'Research'     A path with spaces was put into a
+                                           flag. Do not add paths to the
+                                           *_LINKER_FLAGS in the toolchain file.
+
+ "CMakeCache.txt directory is different"   build\nc-build was copied from
+                                           another folder. Delete it, configure.
+
+ Lines joined with backticks (`) fail      A multi-line command was pasted as
+ strangely                                 one line. Use the one-line commands.
+
+ warning: -Wmicrosoft-include (value.h)    Harmless on Windows; backend team
+                                           should fix the include path in
+                                           compiler/compiler_src/parser/parser.h.
+===============================================================================
