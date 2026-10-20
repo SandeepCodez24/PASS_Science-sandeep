@@ -1,0 +1,162 @@
+==============================================================================
+ ASTRA / NEURAL CODE  -  TOOLCHAIN MANIFEST  -  DEVELOPMENT MODE
+ LLVM version : 23.1.0   (target x86_64-pc-windows-msvc)
+ Purpose      : build nc.exe AND test it (sanitizers, fuzzing, coverage,
+                profiling, binary inspection)
+ Used in      : the DEVELOPMENT repository
+==============================================================================
+
+------------------------------------------------------------------------------
+ 0. BEFORE YOU COPY
+------------------------------------------------------------------------------
+ [ ] Install LLVM-23.1.0-win64.exe (from github.com/llvm/llvm-project/releases,
+     tag llvmorg-23.1.0). Default install folder:  C:\Program Files\LLVM
+ [ ] Confirm the source is really 23.1.0:
+         "C:\Program Files\LLVM\bin\clang.exe" --version
+     Expected first line:  clang version 23.1.0
+ [ ] Start from an EMPTY  <dev-repo>\toolchain\  folder.
+     Do not keep or mix any file from the old LLVM 21 toolchain.
+ [ ] Keep the folder structure EXACTLY as listed. clang finds its own
+     headers and runtime libraries relative to bin\clang.exe
+     (bin\..\lib\clang\23\...). Moving or renaming folders breaks it.
+
+ SOURCE      = C:\Program Files\LLVM
+ DESTINATION = <dev-repo>\toolchain
+
+------------------------------------------------------------------------------
+ 1. bin\   (copy each file from SOURCE\bin\ to DESTINATION\bin\)
+------------------------------------------------------------------------------
+ Build tools
+ [ ] bin\clang.exe              C compiler driver
+ [ ] bin\clang++.exe            C++ compiler driver (identical copy of clang.exe)
+                                Space saver (optional, ~100 MB): instead of
+                                copying, run inside DESTINATION\bin:
+                                    mklink /H clang++.exe clang.exe
+ [ ] bin\lld-link.exe           linker (multithreaded)
+ [ ] bin\llvm-ar.exe            static library tool (builds third-party .lib)
+ [ ] bin\llvm-rc.exe            Windows resource compiler (icons, version info)
+ [ ] bin\llvm-mt.exe            manifest tool (UTF-8 code page, long paths)
+
+ Runtime
+ [ ] bin\libomp.dll             OpenMP runtime: needed to RUN any program built
+                                with -fopenmp (keep it next to nc.exe)
+
+ Testing and diagnosis tools (development only)
+ [ ] bin\llvm-symbolizer.exe    readable stack traces for AddressSanitizer
+ [ ] bin\llvm-profdata.exe      merges .profraw files (PGO and coverage)
+ [ ] bin\llvm-cov.exe           code-coverage reports
+ [ ] bin\llvm-objdump.exe       disassembler
+ [ ] bin\llvm-nm.exe            lists symbols (undefined-symbol link errors)
+ [ ] bin\llvm-readobj.exe       DLL imports/exports of .exe/.dll files
+
+------------------------------------------------------------------------------
+ 2. lib\   (top level)
+------------------------------------------------------------------------------
+ [ ] lib\libomp.lib             linked automatically by -fopenmp
+
+------------------------------------------------------------------------------
+ 3. lib\clang\23\   (the RESOURCE DIRECTORY)
+------------------------------------------------------------------------------
+ Headers
+ [ ] lib\clang\23\include\      THE WHOLE FOLDER, including ALL subfolders
+                                (omp.h, immintrin.h, cpuid.h, stdatomic.h,
+                                 sanitizer\, fuzzer\, profile\ ...)
+                                Do not prune individual headers.
+
+ Runtime libraries: copy only these files from lib\clang\23\lib\windows\
+ [ ] lib\clang\23\lib\windows\clang_rt.builtins-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.profile-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.asan_dynamic-x86_64.dll
+ [ ] lib\clang\23\lib\windows\clang_rt.asan_dynamic-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.asan_dynamic_runtime_thunk-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.asan_static_runtime_thunk-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.ubsan_standalone-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.ubsan_standalone_cxx-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.fuzzer-x86_64.lib
+ [ ] lib\clang\23\lib\windows\clang_rt.fuzzer_no_main-x86_64.lib
+
+ Sanitizer support file
+ [ ] lib\clang\23\share\asan_ignorelist.txt
+
+------------------------------------------------------------------------------
+ 4. NOT FROM LLVM (add separately)
+------------------------------------------------------------------------------
+ [ ] bin\ninja.exe              from github.com/ninja-build/ninja/releases
+                                (your existing ninja.exe can be reused)
+ [ ] licenses\LLVM-LICENSE.TXT  download llvm/LICENSE.TXT from the
+                                llvmorg-23.1.0 tag on GitHub
+ [ ] licenses\NINJA-COPYING     from the ninja repository (file: COPYING)
+
+ Not part of this toolchain folder (keep as they are):
+   - custom_libs\eigen3\        (header-only library, not LLVM)
+   - Visual Studio Build Tools + Windows SDK, installed on the machine
+     (clang uses Microsoft's C/C++ headers and libraries; NEVER copy them
+     into the repository)
+   - CMake, installed on the machine
+
+------------------------------------------------------------------------------
+ 5. FINAL FOLDER LAYOUT
+------------------------------------------------------------------------------
+ <dev-repo>\toolchain\
+ |-- bin\
+ |   |-- clang.exe            clang++.exe        lld-link.exe
+ |   |-- llvm-ar.exe          llvm-rc.exe        llvm-mt.exe
+ |   |-- libomp.dll
+ |   |-- llvm-symbolizer.exe  llvm-profdata.exe  llvm-cov.exe
+ |   |-- llvm-objdump.exe     llvm-nm.exe        llvm-readobj.exe
+ |   `-- ninja.exe
+ |-- lib\
+ |   |-- libomp.lib
+ |   `-- clang\
+ |       `-- 23\
+ |           |-- include\            (entire folder)
+ |           |-- lib\
+ |           |   `-- windows\        (10 files listed in section 3)
+ |           `-- share\
+ |               `-- asan_ignorelist.txt
+ `-- licenses\
+     |-- LLVM-LICENSE.TXT
+     `-- NINJA-COPYING
+
+ Total: 15 files in bin, 1 in lib, 10 runtime files, 1 share file,
+        + the full resource include folder, + 2 licence files.
+
+------------------------------------------------------------------------------
+ 6. DO NOT COPY  (everything else in the LLVM install)
+------------------------------------------------------------------------------
+   bin\  : clang-cl.exe, clang-cpp.exe, all other clang-* tools, clangd.exe,
+           flang*.exe, bbc.exe, fir-*.exe, tco.exe, f18-parse-demo.exe,
+           lld.exe, ld.lld.exe, ld64.lld.exe, wasm-ld.exe, lldb*.exe,
+           all GPU/offload tools, all other llvm-*.exe, libclang.dll,
+           liblldb.dll, LLVM-C.dll, LTO.dll, Remarks.dll, all Python/Perl
+           scripts and .bat files
+   include\              (clang-c, llvm-c, flang, flang-rt)
+   lib\*.lib except libomp.lib
+   lib\cmake\, lib\libear\, lib\libscanbuild\, lib\site-packages\
+   lib\clang\23\finclude\
+   lib\clang\23\lib\x86_64-pc-windows-msvc\   (Fortran runtime)
+   lib\clang\23\lib\windows\ : stats*, fuzzer_interceptors, profile_rocm,
+                               ubsan_loop_detect
+   lib\clang\23\share\cfi_ignorelist.txt
+   libexec\, share\
+
+------------------------------------------------------------------------------
+ 7. CHECKS AFTER COPYING  (run from <dev-repo>)
+------------------------------------------------------------------------------
+ [ ] toolchain\bin\clang.exe --version
+       -> clang version 23.1.0, Target: x86_64-pc-windows-msvc
+ [ ] toolchain\bin\clang.exe -print-resource-dir
+       -> must end in  toolchain\lib\clang\23
+ [ ] OpenMP test:
+       toolchain\bin\clang++.exe -O2 -fopenmp -fuse-ld=lld test_omp.cpp -o test_omp.exe
+       (copy toolchain\bin\libomp.dll next to test_omp.exe, then run it)
+ [ ] AddressSanitizer test:
+       toolchain\bin\clang++.exe -g -fsanitize=address -fuse-ld=lld test.cpp -o test_asan.exe
+       (copy clang_rt.asan_dynamic-x86_64.dll next to test_asan.exe;
+        add toolchain\bin to PATH so llvm-symbolizer is found)
+ [ ] Measure the folder size (PowerShell):
+       (Get-ChildItem -Recurse toolchain | Measure-Object Length -Sum).Sum / 1MB
+
+ When upgrading LLVM later (e.g. 23.1.x): replace the WHOLE toolchain folder
+ from one installation in one go. Never mix files of two versions.
+==============================================================================

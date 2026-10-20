@@ -1,0 +1,123 @@
+==============================================================================
+ ASTRA / NEURAL CODE  -  TOOLCHAIN MANIFEST  -  RELEASE MODE
+ LLVM version : 23.1.0   (target x86_64-pc-windows-msvc)
+ Purpose      : build the RELEASE nc.exe that ships to users. Nothing more.
+                No sanitizers, fuzzing, profiling or inspection tools.
+ Used in      : the RELEASE repository
+==============================================================================
+
+ Important: this toolchain folder is used to BUILD nc.exe. It is NOT shipped
+ to users. Users receive only nc.exe + libomp.dll inside the Astra installer.
+
+------------------------------------------------------------------------------
+ 0. BEFORE YOU COPY
+------------------------------------------------------------------------------
+ [ ] Use the SAME LLVM 23.1.0 installation as the development toolchain.
+         "C:\Program Files\LLVM\bin\clang.exe" --version
+     Expected first line:  clang version 23.1.0
+ [ ] Start from an EMPTY  <release-repo>\toolchain\  folder.
+ [ ] Keep the folder structure EXACTLY as listed (clang locates
+     bin\..\lib\clang\23 relative to itself).
+
+ SOURCE      = C:\Program Files\LLVM
+ DESTINATION = <release-repo>\toolchain
+
+------------------------------------------------------------------------------
+ 1. bin\
+------------------------------------------------------------------------------
+ Build tools
+ [ ] bin\clang.exe              C compiler driver
+ [ ] bin\clang++.exe            C++ compiler driver (identical copy of clang.exe)
+                                Space saver (optional, ~100 MB):
+                                    mklink /H clang++.exe clang.exe
+ [ ] bin\lld-link.exe           linker (also performs ThinLTO)
+ [ ] bin\llvm-ar.exe            static library tool
+ [ ] bin\llvm-rc.exe            embeds icon and version info in nc.exe
+ [ ] bin\llvm-mt.exe            embeds the manifest (UTF-8, long paths)
+
+ Runtime (this file SHIPS to users, next to nc.exe)
+ [ ] bin\libomp.dll             OpenMP runtime
+
+ Release verification
+ [ ] bin\llvm-readobj.exe       confirms nc.exe depends only on Windows
+                                system DLLs + libomp.dll
+
+------------------------------------------------------------------------------
+ 2. lib\   (top level)
+------------------------------------------------------------------------------
+ [ ] lib\libomp.lib             linked automatically by -fopenmp
+
+------------------------------------------------------------------------------
+ 3. lib\clang\23\   (the RESOURCE DIRECTORY)
+------------------------------------------------------------------------------
+ [ ] lib\clang\23\include\      THE WHOLE FOLDER, including ALL subfolders
+ [ ] lib\clang\23\lib\windows\clang_rt.builtins-x86_64.lib
+
+ (No other runtime library: release builds use no sanitizers, fuzzing or
+  profiling. If you add Profile-Guided Optimisation later, add
+  clang_rt.profile-x86_64.lib and bin\llvm-profdata.exe.)
+
+------------------------------------------------------------------------------
+ 4. NOT FROM LLVM (add separately)
+------------------------------------------------------------------------------
+ [ ] bin\ninja.exe              same ninja.exe as the development toolchain
+ [ ] licenses\LLVM-LICENSE.TXT  llvm/LICENSE.TXT from the llvmorg-23.1.0 tag
+ [ ] licenses\NINJA-COPYING     COPYING from the ninja repository
+
+ Not part of this toolchain folder:
+   - custom_libs\eigen3\ and the other third-party sources
+   - Visual Studio Build Tools + Windows SDK on the build machine
+     (never copied into the repository, never shipped)
+   - CMake on the build machine
+
+------------------------------------------------------------------------------
+ 5. FINAL FOLDER LAYOUT
+------------------------------------------------------------------------------
+ <release-repo>\toolchain\
+ |-- bin\
+ |   |-- clang.exe        clang++.exe      lld-link.exe
+ |   |-- llvm-ar.exe      llvm-rc.exe      llvm-mt.exe
+ |   |-- libomp.dll       llvm-readobj.exe
+ |   `-- ninja.exe
+ |-- lib\
+ |   |-- libomp.lib
+ |   `-- clang\
+ |       `-- 23\
+ |           |-- include\            (entire folder)
+ |           `-- lib\
+ |               `-- windows\
+ |                   `-- clang_rt.builtins-x86_64.lib
+ `-- licenses\
+     |-- LLVM-LICENSE.TXT
+     `-- NINJA-COPYING
+
+ Total: 9 files in bin, 1 in lib, 1 runtime file,
+        + the full resource include folder, + 2 licence files.
+
+------------------------------------------------------------------------------
+ 6. DO NOT COPY
+------------------------------------------------------------------------------
+   Everything not listed above, including all development-only items:
+   llvm-symbolizer, llvm-profdata, llvm-cov, llvm-objdump, llvm-nm,
+   all clang_rt.asan*, ubsan*, fuzzer*, profile*, stats* files,
+   lib\clang\23\share\ (asan_ignorelist.txt is not needed without ASan).
+
+------------------------------------------------------------------------------
+ 7. CHECKS AFTER COPYING  (run from <release-repo>)
+------------------------------------------------------------------------------
+ [ ] toolchain\bin\clang.exe --version          -> clang version 23.1.0
+ [ ] toolchain\bin\clang.exe -print-resource-dir
+       -> must end in  toolchain\lib\clang\23
+ [ ] OpenMP test (as in the development manifest)
+ [ ] After the first release build of nc.exe:
+       toolchain\bin\llvm-readobj.exe --coff-imports nc.exe
+       -> only Windows system DLLs (KERNEL32.dll ...) and libomp.dll
+ [ ] Run nc.exe on a clean Windows machine (or Windows Sandbox) that has no
+     LLVM, Visual Studio or Java development tools installed.
+
+ SHIPPED TO USERS (inside the Astra installer, e.g. <install>\app\native\):
+     nc.exe
+     libomp.dll
+     licenses\ (LLVM, Eigen, and every third-party library used)
+ NOT shipped: the toolchain folder, nc.pdb (archive it per release instead).
+==============================================================================
