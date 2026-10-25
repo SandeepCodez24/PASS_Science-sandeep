@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neural Code guide</title>
+<meta name="description" content="A plain-language guide to variables, functions and classes in Neural Code, the language of the Astra IDE.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root {
+  --paper: #F6F7F9;
+  --surface: #FFFFFF;
+  --ink: #1B2430;
+  --ink-soft: #4A5563;
+  --rule: #D9DEE5;
+  --navy: #1F3A5F;          /* Astra title bars */
+  --navy-ink: #FFFFFF;
+  --gutter: #E8E8E8;        /* Astra editor gutter band (light) */
+  --gutter-ink: #8A9099;
+  --code-bg: #FFFFFF;
+  --cli-bg: #F1F3F6;
+  --named: #1F3A5F;
+  --plain: #208582;
+  --default: #7A716E;
+  --error: #B3261E;
+  --error-bg: #FBEDEC;
+  --focus: #30789C;
+  /* Astra editor text colours */
+  --t-keyword: #30789C;
+  --t-string: #208582;
+  --t-number: #7A716E;
+  --t-builtin: #9932CC;
+  --t-op: #4D692F;
+  --t-compare: #1F4063;
+  --t-other: #456373;
+  --t-comment: #8A9099;
+  --t-name: #1B2430;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1C2128;
+    --surface: #242B33;
+    --ink: #E3E7EC;
+    --ink-soft: #A9B2BD;
+    --rule: #3A434E;
+    --navy: #2B4E7A;
+    --gutter: #515861;        /* Astra editor gutter band (dark) */
+    --gutter-ink: #C3C9D1;
+    --code-bg: #20262D;
+    --cli-bg: #1A1F25;
+    --named: #8FB4E3;
+    --plain: #4FC1BD;
+    --default: #B5ADAA;
+    --error: #F2A39D;
+    --error-bg: #3A2524;
+    --focus: #6FB3D6;
+    --t-keyword: #5AA9D0;
+    --t-string: #3FB4AF;
+    --t-number: #B5ADAA;
+    --t-builtin: #C77DEB;
+    --t-op: #8DB86A;
+    --t-compare: #7FA3CC;
+    --t-other: #8FAAB8;
+    --t-comment: #7D8792;
+    --t-name: #E3E7EC;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #1C2128;
+  --surface: #242B33;
+  --ink: #E3E7EC;
+  --ink-soft: #A9B2BD;
+  --rule: #3A434E;
+  --navy: #2B4E7A;
+  --gutter: #515861;
+  --gutter-ink: #C3C9D1;
+  --code-bg: #20262D;
+  --cli-bg: #1A1F25;
+  --named: #8FB4E3;
+  --plain: #4FC1BD;
+  --default: #B5ADAA;
+  --error: #F2A39D;
+  --error-bg: #3A2524;
+  --focus: #6FB3D6;
+  --t-keyword: #5AA9D0;
+  --t-string: #3FB4AF;
+  --t-number: #B5ADAA;
+  --t-builtin: #C77DEB;
+  --t-op: #8DB86A;
+  --t-compare: #7FA3CC;
+  --t-other: #8FAAB8;
+  --t-comment: #7D8792;
+  --t-name: #E3E7EC;
+}
+
+/* ---------- base ---------- */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+code, pre, .mono { font-family: "JetBrains Mono", Consolas, "Courier New", monospace; }
+a { color: var(--focus); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- top bar (Astra title strip) ---------- */
+.topbar {
+  background: var(--navy);
+  color: var(--navy-ink);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.95rem;
+  position: sticky; top: 0; z-index: 10;
+}
+.topbar .brand { font-weight: 700; letter-spacing: 0.01em; }
+.topbar button {
+  background: transparent; color: inherit; border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 4px; padding: 0.25rem 0.7rem; font: inherit; font-size: 0.85rem; cursor: pointer;
+}
+
+/* ---------- layout ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  gap: 3rem;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 5rem;
+}
+nav.toc { position: sticky; top: 4.2rem; align-self: start; max-height: calc(100vh - 5rem); overflow: auto; }
+nav.toc p { margin: 0 0 0.5rem; font-weight: 700; color: var(--ink-soft); font-size: 0.9rem; }
+nav.toc ol { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--rule); }
+nav.toc li a {
+  display: block; padding: 0.28rem 0 0.28rem 0.9rem; margin-left: -2px;
+  color: var(--ink-soft); text-decoration: none; font-size: 0.93rem; border-left: 2px solid transparent;
+}
+nav.toc li a:hover { color: var(--ink); }
+nav.toc li a.active { color: var(--ink); border-left-color: var(--navy); font-weight: 700; }
+nav.toc .group { margin: 0.9rem 0 0.25rem 0.9rem; font-size: 0.8rem; color: var(--ink-soft); }
+
+main { max-width: 46rem; }
+.toc-mobile { display: none; }
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 1.5rem 1rem 4rem; }
+  nav.toc { display: none; }
+  .toc-mobile { display: block; margin: 0 0 2rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+  .toc-mobile summary { padding: 0.7rem 1rem; cursor: pointer; font-weight: 700; }
+  .toc-mobile ol { margin: 0; padding: 0 1rem 0.8rem 2.2rem; }
+  .toc-mobile a { color: var(--ink); }
+}
+
+/* ---------- type ---------- */
+h1 { font-size: clamp(2.1rem, 5vw, 3rem); line-height: 1.12; margin: 0 0 1rem; letter-spacing: -0.015em; }
+h2 { font-size: 1.65rem; line-height: 1.25; margin: 3.6rem 0 0.8rem; padding-top: 0.4rem; scroll-margin-top: 4.5rem; }
+h3 { font-size: 1.2rem; margin: 2rem 0 0.5rem; scroll-margin-top: 4.5rem; }
+p, li { max-width: 68ch; }
+.lead { font-size: 1.2rem; color: var(--ink-soft); margin: 0 0 2rem; }
+.part {
+  margin: 4.5rem 0 0; padding-top: 1.2rem; border-top: 3px solid var(--navy);
+  font-size: 0.95rem; color: var(--ink-soft); font-weight: 700;
+}
+.part + h2 { margin-top: 0.6rem; }
+p code, li code, td code { white-space: nowrap; font-size: 0.88em; background: var(--surface); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.3em; }
+
+.note {
+  border-left: 4px solid var(--navy);
+  background: var(--surface);
+  padding: 0.8rem 1.1rem; margin: 1.4rem 0; border-radius: 0 6px 6px 0;
+}
+.note p { margin: 0.3rem 0; }
+.note.warn { border-left-color: var(--error); }
+
+table { border-collapse: collapse; width: 100%; margin: 1.2rem 0; font-size: 0.95rem; }
+th, td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { color: var(--ink-soft); font-weight: 700; }
+.table-wrap { overflow-x: auto; }
+
+/* ---------- editor + command window ---------- */
+.example { margin: 1.4rem 0 1.8rem; }
+.editor {
+  border: 1px solid var(--rule); border-radius: 6px 6px 0 0; overflow: hidden; background: var(--code-bg);
+}
+.example.solo .editor { border-radius: 6px; }
+.editor .tab {
+  font-size: 0.8rem; padding: 0.3rem 0.8rem; background: var(--surface);
+  border-bottom: 1px solid var(--rule); color: var(--ink-soft);
+}
+.editor pre { margin: 0; display: flex; overflow-x: auto; font-size: 0.86rem; line-height: 1.55; }
+.editor .gutter {
+  flex: none; background: var(--gutter); color: var(--gutter-ink); text-align: right;
+  padding: 0.7rem 0.6rem 0.7rem 0.9rem; user-select: none; min-width: 3.1rem;
+}
+.editor code { display: block; padding: 0.7rem 1rem; color: var(--t-name); white-space: pre; flex: 1; }
+.cli {
+  border: 1px solid var(--rule); border-top: none; border-radius: 0 0 6px 6px; background: var(--cli-bg);
+}
+.cli .strip {
+  font-size: 0.78rem; padding: 0.25rem 0.8rem; color: var(--navy-ink); background: var(--navy);
+}
+.cli pre { margin: 0; padding: 0.7rem 1rem; font-size: 0.84rem; line-height: 1.5; overflow-x: auto; white-space: pre; }
+.cli .err { color: var(--error); }
+
+/* highlighter classes */
+.k { color: var(--t-keyword); font-weight: 600; }
+.s { color: var(--t-string); }
+.n { color: var(--t-number); }
+.b { color: var(--t-builtin); }
+.o { color: var(--t-op); }
+.c { color: var(--t-compare); }
+.x { color: var(--t-other); }
+.cm { color: var(--t-comment); font-style: italic; }
+.an { color: var(--named); font-weight: 600; }   /* input name in a call: Add(x1=...) */
+
+/* ---------- hero ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+main, .example, .editor, .cli { min-width: 0; }
+.hero .example { margin: 0; }
+
+/* ---------- call playground ---------- */
+.playground {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 8px;
+  padding: 1.2rem 1.2rem 1.4rem; margin: 1.6rem 0 2rem;
+}
+.playground label { display: block; font-weight: 700; font-size: 0.92rem; margin: 0 0 0.3rem; }
+.playground .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
+.playground input {
+  width: 100%; font-family: "JetBrains Mono", Consolas, monospace; font-size: 0.95rem;
+  padding: 0.55rem 0.7rem; border: 1px solid var(--rule); border-radius: 5px;
+  background: var(--code-bg); color: var(--ink);
+}
+.presets { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+.presets button {
+  font-family: "JetBrains Mono", Consolas, monospace; font-size: 0.8rem; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--paper); color: var(--ink);
+  border-radius: 4px; padding: 0.2rem 0.5rem;
+}
+.presets button:hover { border-color: var(--focus); }
+.slots { display: grid; grid-template-columns: repeat(auto-fit, minmax(5.4rem, 1fr)); gap: 0.6rem; margin-top: 1.2rem; }
+.slot {
+  border: 2px solid var(--rule); border-radius: 6px; padding: 0.5rem 0.4rem 0.45rem; text-align: center;
+  background: var(--paper); transition: border-color 0.25s, background-color 0.25s;
+}
+.slot .nm { font-family: "JetBrains Mono", Consolas, monospace; font-size: 0.85rem; color: var(--ink-soft); }
+.slot .val { font-family: "JetBrains Mono", Consolas, monospace; font-size: 1.15rem; font-weight: 600; min-height: 1.7rem; }
+.slot .how { font-size: 0.75rem; color: var(--ink-soft); }
+.slot.named { border-color: var(--navy); background: var(--navy); }
+.slot.named .val, .slot.named .nm, .slot.named .how { color: #FFFFFF; }
+.slot.plain { border-color: var(--plain); }
+.slot.plain .val { color: var(--plain); }
+.slot.default { border-style: dashed; border-color: var(--default); }
+.slot.default .val { color: var(--default); }
+.slot.missing { border-color: var(--error); background: var(--error-bg); }
+.steps { margin: 1rem 0 0; padding-left: 1.3rem; font-size: 0.95rem; }
+.steps li { margin: 0.2rem 0; }
+.verdict { margin-top: 1rem; font-size: 0.95rem; padding: 0.6rem 0.8rem; border-radius: 5px; }
+.verdict.ok { background: var(--paper); border: 1px solid var(--rule); }
+.verdict.bad { background: var(--error-bg); color: var(--error); border: 1px solid var(--error); }
+.legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.9rem; font-size: 0.85rem; color: var(--ink-soft); }
+.legend span::before { content: ""; display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; margin-right: 0.35rem; vertical-align: -0.1rem; border: 2px solid; }
+.legend .l-named::before { border-color: var(--navy); background: var(--navy); }
+.legend .l-plain::before { border-color: var(--plain); }
+.legend .l-default::before { border-color: var(--default); border-style: dashed; }
+
+footer { margin-top: 5rem; padding-top: 1.2rem; border-top: 1px solid var(--rule); color: var(--ink-soft); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <span class="brand">Astra</span>
+  <button type="button" id="themeToggle" aria-label="Switch between light and dark">Dark</button>
+</header>
+
+<div class="layout">
+
+<nav class="toc" aria-label="Contents">
+  <p>On this page</p>
+  <ol id="tocList">
+    <li class="group">Basics</li>
+    <li><a href="#start">Writing your first lines</a></li>
+    <li><a href="#variables">Variables</a></li>
+    <li class="group">Functions</li>
+    <li><a href="#functions">What a function is</a></li>
+    <li><a href="#defaults">Default values</a></li>
+    <li><a href="#named">Naming values in a call</a></li>
+    <li><a href="#versions">Several versions of a function</a></li>
+    <li><a href="#refs">Passing a function around</a></li>
+    <li><a href="#errors">When a call is wrong</a></li>
+    <li class="group">Classes</li>
+    <li><a href="#classes">What a class is</a></li>
+    <li><a href="#methods">Methods</a></li>
+    <li><a href="#inherit">Building on another class</a></li>
+    <li><a href="#private">Private and protected fields</a></li>
+    <li><a href="#special">Abstract and reversible classes</a></li>
+    <li><a href="#inspect">Looking inside a class</a></li>
+    <li class="group">Reference</li>
+    <li><a href="#reference">Quick reference</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<details class="toc-mobile">
+  <summary>Contents</summary>
+  <ol>
+    <li><a href="#start">Writing your first lines</a></li>
+    <li><a href="#variables">Variables</a></li>
+    <li><a href="#functions">What a function is</a></li>
+    <li><a href="#defaults">Default values</a></li>
+    <li><a href="#named">Naming values in a call</a></li>
+    <li><a href="#versions">Several versions of a function</a></li>
+    <li><a href="#refs">Passing a function around</a></li>
+    <li><a href="#errors">When a call is wrong</a></li>
+    <li><a href="#classes">What a class is</a></li>
+    <li><a href="#methods">Methods</a></li>
+    <li><a href="#inherit">Building on another class</a></li>
+    <li><a href="#private">Private and protected fields</a></li>
+    <li><a href="#special">Abstract and reversible classes</a></li>
+    <li><a href="#inspect">Looking inside a class</a></li>
+    <li><a href="#reference">Quick reference</a></li>
+  </ol>
+</details>
+
+<section class="hero" aria-labelledby="title">
+  <div>
+    <h1 id="title">Variables, functions and classes in Neural Code</h1>
+    <p class="lead">Neural Code is the language you write in Astra. This guide explains, in plain words, how to store values, how to write your own functions, and how to group data and behaviour into classes. Every example on this page was run, and the output shown is what you will see.</p>
+  </div>
+  <div class="example">
+    <div class="editor"><div class="tab">shapes.nc</div><pre class="nc">class Shape():
+   function base(w, h=1, label="shape"):
+      base.w = w;
+      base.h = h;
+      base.label = label;
+   fnend
+   function A = area(scale=1):
+      A = base.w * base.h * scale;
+   fnend
+csend
+
+s = Shape(2, 3);
+publish("area =", s.area(), "  area(scale=10) =", s.area(scale=10))</pre></div>
+    <div class="cli"><div class="strip">Command Window</div><pre>area = 6   area(scale=10) = 60</pre></div>
+  </div>
+  <p>In those few lines there is a class (<code>Shape</code>), an object made from it (<code>s</code>), inputs with default values (<code>h=1</code>, <code>scale=1</code>) and a value passed by name (<code>scale=10</code>). The rest of this page takes each of these one at a time.</p>
+</section>
+
+<!-- ======================================================= BASICS -->
+<p class="part">Basics</p>
+<h2 id="start">Writing your first lines</h2>
+<p>A Neural Code file ends in <code>.nc</code>. You write one statement per line and run the file with Run, or type the same lines in the Command Window.</p>
+<ul>
+  <li><strong>End a statement with <code>;</code></strong> to run it quietly. Leave the <code>;</code> off and Astra shows the result in the Command Window.</li>
+  <li><strong><code>publish(...)</code> prints</strong> one or more values on a line, separated by spaces.</li>
+  <li><strong>A line starting with <code>#</code> is a comment.</strong> It is there for people and is not run.</li>
+  <li><strong>Blocks end with a closing word</strong> on its own line: <code>fnend</code> ends a function, <code>csend</code> a class, <code>iend</code> an if, <code>fend</code> a for loop and <code>wend</code> a while loop. Every block header ends with <code>:</code>.</li>
+  <li><strong>Indent by 3 spaces</strong> for each level inside a block.</li>
+</ul>
+
+<h2 id="variables">Variables</h2>
+<p>A variable is a name that holds a value. You create one by writing the name, <code>=</code>, and the value. Writing to the same name again replaces the old value.</p>
+<div class="example">
+  <div class="editor"><div class="tab">variables.nc</div><pre class="nc"># numbers, text, true/false and a fixed-width integer
+speed = 12.5;
+name = "Astra";
+ready = true;
+count = int32(7);
+publish(speed, name, ready, count)
+speed = 20</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>12.5 Astra true 7
+
+speed =
+    20</pre></div>
+</div>
+<p>The last line has no <code>;</code>, so Astra shows the new value of <code>speed</code>.</p>
+
+<h3>What kind of value a variable holds</h3>
+<p>You do not declare a type. The value decides it:</p>
+<div class="table-wrap"><table>
+  <thead><tr><th>You write</th><th>Kind of value</th></tr></thead>
+  <tbody>
+    <tr><td><code>x = 12.5;</code></td><td>A number. Every plain number is a <code>float64</code> unless you ask for something else.</td></tr>
+    <tr><td><code>n = int32(7);</code></td><td>A whole number of a fixed size. Also <code>int8</code> … <code>int64</code>, <code>uint8</code> … <code>uint64</code>, and <code>float32</code> and friends.</td></tr>
+    <tr><td><code>ok = true;</code></td><td>A <code>bool</code>: <code>true</code> or <code>false</code>.</td></tr>
+    <tr><td><code>s = "car";</code> or <code>s = 'car';</code></td><td>A <code>string</code> (text). Either quote works, and one can sit inside the other: <code>"the country 'India'"</code>.</td></tr>
+    <tr><td><code>A = [1, 2, 3; 4, 5, 6];</code></td><td>A <code>matrix</code>. Commas separate values, <code>;</code> separates rows, and every row has the same length.</td></tr>
+    <tr><td><code>z = 3 + 4i;</code></td><td>A <code>complex</code> number.</td></tr>
+    <tr><td><code>d = dict();</code></td><td>A <code>dict</code>: values stored under keys, read with <code>d["key"]</code>.</td></tr>
+  </tbody>
+</table></div>
+
+<h3>Names</h3>
+<p>A name starts with a letter or <code>_</code> and continues with letters, digits and <code>_</code>. Letters from other scripts work too, so <code>μ</code>, <code>α</code> and Indian-script names are fine. A subscript is written <code>_$</code> and a superscript <code>_@</code>: <code>A_$1</code> is A with subscript 1, and <code>B_@2</code> is B with superscript 2.</p>
+<div class="example">
+  <div class="editor"><div class="tab">names.nc</div><pre class="nc">μ = 2.5;
+A_$1 = 3;
+B_@2 = 9;
+publish(μ, A_$1, B_@2)</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>2.5 3 9</pre></div>
+</div>
+
+<!-- ======================================================= FUNCTIONS -->
+<p class="part">Functions</p>
+<h2 id="functions">What a function is</h2>
+<p>A function is a named piece of work you can run again and again. You give it <strong>inputs</strong>, it does its work, and it hands back <strong>outputs</strong>. Write it once, then call it by name wherever you need it.</p>
+<p>A function starts with the word <code>function</code> and ends with <code>fnend</code>. The header names the outputs, the function and its inputs, and ends with <code>:</code>. Inside, you give each output a value.</p>
+<div class="example">
+  <div class="editor"><div class="tab">functions.nc</div><pre class="nc"># one output
+function y = square(x):
+   y = x * x;
+fnend
+
+# no inputs and no outputs
+function hello():
+   publish("Hello from Neural Code")
+fnend
+
+# two outputs, written in square brackets
+function [q, r] = divide(a, b):
+   q = a // b;
+   r = a % b;
+fnend
+
+s = square(6);
+publish("square(6) =", s)
+hello();
+[q, r] = divide(17, 5);
+publish("17 divided by 5:", q, "remainder", r)</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>square(6) = 36
+Hello from Neural Code
+17 divided by 5: 3 remainder 2</pre></div>
+</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Header</th><th>Means</th></tr></thead>
+  <tbody>
+    <tr><td><code>function y = f(x):</code></td><td>One output, <code>y</code></td></tr>
+    <tr><td><code>function [a, b] = f(x):</code></td><td>Several outputs. Collect them with <code>[a, b] = f(x);</code></td></tr>
+    <tr><td><code>function f(x):</code></td><td>No output; the function only does something, like printing</td></tr>
+    <tr><td><code>function f():</code></td><td>No inputs</td></tr>
+  </tbody>
+</table></div>
+<p>Variables made inside a function belong to that function. They do not change, or even see, the variables of the code that called it.</p>
+
+<h2 id="defaults">Default values</h2>
+<p>An input can have a <strong>default value</strong>: the value it takes when the call leaves it out. Write it in the header as <code>name = value</code>.</p>
+<div class="example">
+  <div class="editor"><div class="tab">defaults.nc</div><pre class="nc">function greet(name, greeting="Hello", times=1):
+   publish(greeting, name, "x", times)
+fnend
+
+greet("Siva");
+greet("Siva", "Vanakkam");
+greet("Siva", "Namaste", 3);</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>Hello Siva x 1
+Vanakkam Siva x 1
+Namaste Siva x 3</pre></div>
+</div>
+<p>A few things to know about defaults:</p>
+<ul>
+  <li><strong>An input without a default must always be given.</strong> <code>greet()</code> is an error, because <code>name</code> has no default.</li>
+  <li><strong>A default can be any expression</strong>: a number, text, <code>true</code>, a matrix, or a calculation.</li>
+  <li><strong>A default can use another input.</strong> In <code>area(w, h=w)</code>, leaving out <code>h</code> makes it equal to <code>w</code>.</li>
+  <li><strong>The default is worked out every time</strong> the function is called, not once when it is defined.</li>
+</ul>
+<div class="example">
+  <div class="editor"><div class="tab">defaults.nc</div><pre class="nc">function y = area(w, h=w):
+   y = w * h;
+fnend
+
+publish("area(4) =", area(4), "  area(4, 2) =", area(4, 2))</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>area(4) = 16   area(4, 2) = 8</pre></div>
+</div>
+
+<h2 id="named">Naming values in a call</h2>
+<p>When you call a function you can give a value <strong>by the input's name</strong>, written <code>name = value</code>. Named values can come in any order, so you do not have to remember the order of the inputs.</p>
+<div class="example">
+  <div class="editor"><div class="tab">named.nc</div><pre class="nc">function C = Add(x1, x2):
+   C = x1 + x2;
+fnend
+
+C = Add(x1=10, x2=15);
+publish("Add(x1=10, x2=15) =", C)
+C = Add(x2=15, x1=10);
+publish("Add(x2=15, x1=10) =", C)</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>Add(x1=10, x2=15) = 25
+Add(x2=15, x1=10) = 25</pre></div>
+</div>
+
+<h3>Mixing named and plain values</h3>
+<p>You can mix both kinds in one call, in any order, even putting plain values after named ones. Neural Code fills the inputs in two steps:</p>
+<ol>
+  <li><strong>Named values go first</strong>, each to the input with its name.</li>
+  <li><strong>Then the plain values</strong>, in the order you wrote them, fill the inputs that are still empty, from left to right.</li>
+</ol>
+<p>Any input still empty after that takes its default. If it has no default, the call is an error.</p>
+<p>Take <code>F(A1, A2, A3, A4, A5)</code> and the call <code>F(A2=10, A4=15, 1, 2, 3)</code>. First <code>A2</code> and <code>A4</code> are filled by name. The three plain values then go to the inputs left empty, <code>A1</code>, <code>A3</code> and <code>A5</code>. Try it below: change the call or the header and watch where each value lands.</p>
+
+<div class="playground" id="playground">
+  <div class="row">
+    <div>
+      <label for="pgHeader">Function header</label>
+      <input id="pgHeader" value="function F(A1, A2, A3, A4, A5):" spellcheck="false" autocomplete="off">
+    </div>
+    <div>
+      <label for="pgCall">Call</label>
+      <input id="pgCall" value="F(A2=10, A4=15, 1, 2, 3)" spellcheck="false" autocomplete="off">
+      <div class="presets" aria-label="Example calls">
+        <button type="button" data-h="function F(A1, A2, A3, A4, A5):" data-c="F(A2=10, A4=15, 1, 2, 3)">F(A2=10, A4=15, 1, 2, 3)</button>
+        <button type="button" data-h="function F(A1, A2, A3, A4, A5):" data-c="F(1, A3=5, 2, 3, 4)">F(1, A3=5, 2, 3, 4)</button>
+        <button type="button" data-h="function F(A1, A2, A3, A4, A5):" data-c="F(10, 20, A1=5, 30, 40)">F(10, 20, A1=5, 30, 40)</button>
+        <button type="button" data-h="function y = G(a, b=100, c=1000):" data-c="G(1, c=0)">G(1, c=0)</button>
+        <button type="button" data-h="function y = G(a, b=100, c=1000):" data-c="G(c=0)">G(c=0)</button>
+        <button type="button" data-h="function y = G(a, b=100, c=1000):" data-c="G(a=1, a=2)">G(a=1, a=2)</button>
+      </div>
+    </div>
+  </div>
+  <div class="slots" id="pgSlots" aria-live="polite"></div>
+  <div class="legend"><span class="l-named">named in the call</span><span class="l-plain">plain value</span><span class="l-default">default from the header</span></div>
+  <ol class="steps" id="pgSteps"></ol>
+  <div class="verdict" id="pgVerdict" role="status"></div>
+</div>
+
+<div class="example">
+  <div class="editor"><div class="tab">mixing.nc</div><pre class="nc">function F(A1, A2, A3, A4, A5):
+   publish("A1 =", A1, " A2 =", A2, " A3 =", A3, " A4 =", A4, " A5 =", A5)
+fnend
+
+F(A2=10, A4=15, 1, 2, 3);
+F(1, A3=5, 2, 3, 4);
+F(10, 20, A1=5, 30, 40);</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>A1 = 1  A2 = 10  A3 = 2  A4 = 15  A5 = 3
+A1 = 1  A2 = 2  A3 = 5  A4 = 3  A5 = 4
+A1 = 5  A2 = 10  A3 = 20  A4 = 30  A5 = 40</pre></div>
+</div>
+<div class="note">
+  <p><strong>Different from Python.</strong> In Python, every plain value must come before the named ones. Neural Code lets you write plain values anywhere. A plain value written before a name does not claim that position: in <code>F(10, 20, A1=5, 30, 40)</code>, <code>10</code> goes to <code>A2</code> because <code>A1</code> was already given by name.</p>
+</div>
+<p>Defaults and names work well together. Give only the values you want to change, by name, and let the rest take their defaults:</p>
+<div class="example">
+  <div class="editor"><div class="tab">mixing.nc</div><pre class="nc">function y = G(a, b=100, c=1000):
+   y = a + b + c;
+fnend
+
+publish("G(1) =", G(1))
+publish("G(1, c=0) =", G(1, c=0))
+publish("G(c=0, a=5) =", G(c=0, a=5))</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>G(1) = 1101
+G(1, c=0) = 101
+G(c=0, a=5) = 105</pre></div>
+</div>
+<p>Named values work for every function and class you write yourself. The built-in functions such as <code>sqrt</code> take their values in order only. Write <code>==</code> when you mean a comparison: <code>f(x == 1)</code> passes one true/false value, while <code>f(x = 1)</code> passes 1 to the input <code>x</code>.</p>
+
+<h2 id="versions">Several versions of a function</h2>
+<p>You can define the same function name more than once, as long as each version has a <strong>different number of inputs</strong>. Neural Code picks the version that fits the call. Defining a version with the same number of inputs again replaces the old one.</p>
+<div class="example">
+  <div class="editor"><div class="tab">versions.nc</div><pre class="nc">function y = combine(a):
+   y = a;
+fnend
+function y = combine(a, b):
+   y = a + b;
+fnend
+
+publish(combine(4), combine(4, 5))</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>4 9</pre></div>
+</div>
+<p>When defaults mean more than one version could take a call, Neural Code uses the one that needs the <strong>fewest defaults</strong>. With <code>P(a)</code> and <code>P(a, b=2)</code>, the call <code>P(9)</code> runs <code>P(a)</code>, while <code>P(9, 9)</code> runs <code>P(a, b=2)</code>.</p>
+
+<h2 id="refs">Passing a function around</h2>
+<p>Write <code>@</code> before a function's name to refer to the function itself rather than call it. Store it in a variable or hand it to another function, then run it with <code>feval</code>.</p>
+<div class="example">
+  <div class="editor"><div class="tab">refs.nc</div><pre class="nc">function y = twice(x):
+   y = 2 * x;
+fnend
+
+f = @twice;
+publish(feval(f, 21))</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>42</pre></div>
+</div>
+
+<h2 id="errors">When a call is wrong</h2>
+<p>If a call does not fit the function, Neural Code says what is wrong and shows the function's header, so you can see what it expects.</p>
+<div class="example">
+  <div class="editor"><div class="tab">mistakes.nc</div><pre class="nc">function y = G(a, b=100, c=1000):
+   y = a + b + c;
+fnend
+
+r = G();
+r = G(1, 2, 3, 4);
+r = G(d=1);
+r = G(a=1, a=2);
+r = sqrt(x=4);</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre class="err">Error: function 'G': input 'a' was not given and has no default value (defined as y = G(a, b=100, c=1000))
+Error: function 'G': it takes 3 inputs, but 4 values were given (defined as y = G(a, b=100, c=1000))
+Error: function 'G': there is no input named 'd' - its inputs are a, b, c (defined as y = G(a, b=100, c=1000))
+Error: function 'G': input 'a' is given more than once (defined as y = G(a, b=100, c=1000))
+Error: 'sqrt' is not a function or class defined in this script, so its values cannot be named - give them in order</pre></div>
+</div>
+<p>Mistakes in a header are caught too. An input listed twice, <code>f(a, a)</code>, and a default with no value, <code>f(a, b=)</code>, are both errors.</p>
+
+<!-- ======================================================= CLASSES -->
+<p class="part">Classes</p>
+<h2 id="classes">What a class is</h2>
+<p>A <strong>class</strong> is a plan for a kind of thing. It says what data the thing holds and what it can do. An <strong>object</strong> is one actual thing made from that plan. One <code>Shape</code> class can make many shapes, each with its own size.</p>
+<p>The data an object holds are its <strong>fields</strong>. The functions that belong to a class are its <strong>methods</strong>.</p>
+<p>A class starts with <code>class Name():</code> and ends with <code>csend</code>. Inside, the function named <code>base</code> is the <strong>constructor</strong>: it runs once each time an object is made and sets up the fields. Inside the class, <code>base</code> also stands for the object being worked on, so <code>base.w = w;</code> stores the input <code>w</code> in a field called <code>w</code>.</p>
+<div class="example">
+  <div class="editor"><div class="tab">shape.nc</div><pre class="nc">class Shape():
+   function base(w, h=1, label="shape"):
+      base.w = w;
+      base.h = h;
+      base.label = label;
+   fnend
+csend
+
+s = Shape(2, 3);
+publish("w =", s.w, " h =", s.h, " label =", s.label)
+t = Shape(h=4, 5, label="tile");
+publish("t: w =", t.w, " h =", t.h, " label =", t.label)</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>w = 2  h = 3  label = shape
+t: w = 5  h = 4  label = tile</pre></div>
+</div>
+<p>You make an object by calling the class by name, <code>Shape(2, 3)</code>, which runs its constructor. Read a field with a dot: <code>s.w</code>. Defaults and named values work exactly as they do for functions, so <code>Shape(h=4, 5, label="tile")</code> sets <code>h</code> and <code>label</code> by name and gives the plain <code>5</code> to <code>w</code>.</p>
+
+<h2 id="methods">Methods</h2>
+<p>A method is a function written inside the class. Call it on an object with a dot: <code>s.area()</code>. Inside the method, <code>base</code> is that object, so the method can read its fields and change them. A change made by a method stays with the object.</p>
+<div class="example">
+  <div class="editor"><div class="tab">shape.nc</div><pre class="nc">class Shape():
+   function base(w, h=1, label="shape"):
+      base.w = w;
+      base.h = h;
+      base.label = label;
+   fnend
+   function A = area(scale=1):
+      A = base.w * base.h * scale;
+   fnend
+   function grow(dw=1, dh=1):
+      base.w = base.w + dw;
+      base.h = base.h + dh;
+   fnend
+csend
+
+s = Shape(2, 3);
+publish("area =", s.area(), "  area(scale=10) =", s.area(scale=10))
+s.grow(dh=5);
+publish("after grow(dh=5): w =", s.w, " h =", s.h)
+publish(s.lineage())</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>area = 6   area(scale=10) = 60
+after grow(dh=5): w = 3  h = 8
+[init(2, 3),area() -> 6,area(scale=10) -> 60,grow(dh=5)]</pre></div>
+</div>
+<p><code>grow(dh=5)</code> changes only <code>h</code> by name and lets <code>dw</code> take its default of 1. Every object also keeps a history of what was done to it, which you can read with <code>.lineage()</code>.</p>
+
+<h2 id="inherit">Building on another class</h2>
+<p>A class can build on another one. Write the parent's name in the brackets: <code>class Square(Shape):</code>. The new class gets all of the parent's methods, and can add its own or replace them. Inside the new constructor, <code>parent(...)</code> runs the parent's constructor, with defaults and named values as usual.</p>
+<p>This example builds on the <code>Shape</code> class from the section above, so put both in the same file.</p>
+<div class="example">
+  <div class="editor"><div class="tab">square.nc</div><pre class="nc">class Square(Shape):
+   function base(side=2):
+      parent(side, h=side, label="square");
+   fnend
+csend
+
+q = Square(side=7);
+publish(q.label, "area =", q.area())</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>square area = 49</pre></div>
+</div>
+<p><code>Square</code> never wrote an <code>area</code> method; it uses the one from <code>Shape</code>. If a class writes a method with the same name and the same number of inputs as its parent, its own version is used instead.</p>
+
+<h2 id="private">Private and protected fields</h2>
+<p>Sometimes a field should only be changed by the class's own methods. List it after <code>private</code> to keep code outside the class from reading or writing it. Use <code>protected</code> instead when classes built on this one should still have access.</p>
+<div class="example">
+  <div class="editor"><div class="tab">account.nc</div><pre class="nc">class Account():
+   private balance;
+   function base(owner, balance=0):
+      base.owner = owner;
+      base.balance = balance;
+   fnend
+   function deposit(amount):
+      base.balance = base.balance + amount;
+   fnend
+   function b = show():
+      b = base.balance;
+   fnend
+csend
+
+a = Account("Siva", 100);
+a.deposit(50);
+publish("balance =", a.show())
+x = a.balance;</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>balance = 150<span class="err">
+Error: field 'balance' is private in class 'Account'</span></pre></div>
+</div>
+
+<h2 id="special">Abstract and reversible classes</h2>
+<p><strong>An abstract class</strong> is a plan that is never used on its own. It lists methods that every class built on it must write. Mark it <code>abstract class</code>, and leave those methods with no body.</p>
+<p><strong>A reversible class</strong> remembers each state of its objects, so you can step back with <code>.rewind(n)</code>.</p>
+<div class="example">
+  <div class="editor"><div class="tab">special.nc</div><pre class="nc">abstract class Animal():
+   function s = speak():
+   fnend
+csend
+
+class Dog(Animal):
+   function base(name):
+      base.name = name;
+   fnend
+   function s = speak():
+      s = "woof";
+   fnend
+csend
+
+d = Dog("Rex");
+publish(d.name, "says", d.speak())
+a = Animal();
+
+reversible class Counter():
+   function base():
+      base.n = 0;
+   fnend
+   function inc(k=1):
+      base.n = base.n + k;
+   fnend
+csend
+
+c = Counter();
+c.inc();
+c.inc(k=5);
+publish("n =", c.n, c.lineage())
+c = c.rewind(1);
+publish("after rewind(1): n =", c.n)</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>Rex says woof<span class="err">
+Error: cannot instantiate abstract class 'Animal'</span>
+n = 6 [init(),inc(),inc(k=5)]
+after rewind(1): n = 1</pre></div>
+</div>
+
+<h2 id="inspect">Looking inside a class: <code>.base</code> and <code>.info</code></h2>
+<p>Every class comes with two built-in ways to look inside it.</p>
+<div class="table-wrap"><table>
+  <thead><tr><th>You write</th><th>You get</th></tr></thead>
+  <tbody>
+    <tr><td><code>Shape.base</code></td><td>The fields the constructor sets up, and what kind of value each one holds. <code>any</code> means it depends on what you pass in.</td></tr>
+    <tr><td><code>FF.base</code> (an object)</td><td>The object's fields with their actual values.</td></tr>
+    <tr><td><code>Shape.info</code></td><td>Every function you can call on the class: the constructor and methods, including those from a parent class, with their inputs, defaults and outputs.</td></tr>
+    <tr><td><code>FF.info</code></td><td>The same as <code>Shape.info</code>, for the object's class.</td></tr>
+  </tbody>
+</table></div>
+<div class="example">
+  <div class="editor"><div class="tab">inspect.nc</div><pre class="nc">class Shape():
+   private secret;
+   function base(w, h=1, label="shape"):
+      base.w = w;
+      base.h = h;
+      base.label = label;
+      base.secret = 42;
+   fnend
+   function A = area(scale=1):
+      A = base.w * base.h * scale;
+   fnend
+   function grow(dw=1, dh=1):
+      base.w = base.w + dw;
+   fnend
+csend
+
+Shape.base
+FF = Shape(2, 3);
+FF.base
+Shape.info</pre></div>
+  <div class="cli"><div class="strip">Command Window</div><pre>ans =
+    {w: any, h: float64, label: string}
+
+ans =
+    {w: 2, h: 3, label: shape}
+
+Shape.info =
+
+    class Shape - 3 functions
+
+    kind          call                           outputs   from
+    constructor   Shape(w, h=1, label="shape")   -         Shape
+    method        area(scale=1)                  A         Shape
+    method        grow(dw=1, dh=1)               -         Shape</pre></div>
+</div>
+<p>Some details:</p>
+<ul>
+  <li>The private field <code>secret</code> is not listed, because the code asking is outside the class. Inside the class's own methods it is included.</li>
+  <li><code>Shape.info</code> on its own line prints a table. Store it, <code>I = Shape.info;</code>, and you get a dict you can read from, such as <code>I["count"]</code>.</li>
+  <li><code>base</code> and <code>info</code> are reserved after a dot, so a field cannot be called <code>base</code> or <code>info</code>, and a class cannot have a method called <code>info</code>.</li>
+</ul>
+
+<!-- ======================================================= REFERENCE -->
+<p class="part">Reference</p>
+<h2 id="reference">Quick reference</h2>
+<div class="table-wrap"><table>
+  <thead><tr><th>To do this</th><th>Write</th></tr></thead>
+  <tbody>
+    <tr><td>Store a value</td><td><code>x = 5;</code></td></tr>
+    <tr><td>Print values</td><td><code>publish("x =", x)</code></td></tr>
+    <tr><td>Define a function</td><td><code>function y = f(a, b):</code> … <code>fnend</code></td></tr>
+    <tr><td>Several outputs</td><td><code>function [q, r] = f(a):</code> and <code>[q, r] = f(5);</code></td></tr>
+    <tr><td>Give an input a default</td><td><code>function y = f(a, b=2):</code></td></tr>
+    <tr><td>Pass a value by name</td><td><code>f(b=3, 1)</code></td></tr>
+    <tr><td>Refer to a function</td><td><code>g = @f;</code> then <code>feval(g, 1)</code></td></tr>
+    <tr><td>Define a class</td><td><code>class Name():</code> … <code>csend</code></td></tr>
+    <tr><td>Constructor</td><td><code>function base(a, b=1):</code> inside the class</td></tr>
+    <tr><td>Set a field</td><td><code>base.a = a;</code> inside the class</td></tr>
+    <tr><td>Make an object</td><td><code>obj = Name(1, b=2);</code></td></tr>
+    <tr><td>Read a field / call a method</td><td><code>obj.a</code> / <code>obj.method(x=1)</code></td></tr>
+    <tr><td>Build on another class</td><td><code>class Child(Parent):</code> and <code>parent(...)</code> in its constructor</td></tr>
+    <tr><td>Keep a field to the class</td><td><code>private a;</code> or <code>protected a;</code></td></tr>
+    <tr><td>Look inside a class</td><td><code>Name.base</code>, <code>Name.info</code>, <code>obj.base</code></td></tr>
+  </tbody>
+</table></div>
+
+<h3>Words with a fixed meaning</h3>
+<p><code>function</code>, <code>fnend</code>, <code>class</code>, <code>csend</code>, <code>abstract</code>, <code>reversible</code>, <code>private</code>, <code>protected</code>, <code>return</code>, <code>parent</code>, and after a dot, <code>base</code> and <code>info</code>. Avoid using them as names.</p>
+
+<footer>Neural Code guide for Astra. Examples were run on the current Neural Code interpreter.</footer>
+</main>
+</div>
+
+<script>
+/* ---------- theme toggle (remembered per browser when possible) ---------- */
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById("themeToggle");
+  let saved = null;
+  try { saved = localStorage.getItem("nc-guide-theme"); } catch (e) {}
+  if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
+  const isDark = () => root.getAttribute("data-theme") === "dark" ||
+    (!root.hasAttribute("data-theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const label = () => { btn.textContent = isDark() ? "Light" : "Dark"; };
+  label();
+  btn.addEventListener("click", () => {
+    const next = isDark() ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("nc-guide-theme", next); } catch (e) {}
+    label();
+  });
+})();
+
+/* ---------- Neural Code colouring + line numbers ---------- */
+(function () {
+  const KEYWORDS = new Set(["function","fnend","class","csend","if","elseif","else","iend","for","fend",
+    "while","wend","in","break","continue","return","private","protected","abstract","reversible",
+    "require","ensure"]);
+  const BUILTINS = new Set(["publish","print","parent","feval","string","int32","int8","int16","int64",
+    "uint8","uint16","uint32","uint64","float32","float64","sqrt","dict","str"]);
+  const OTHER = new Set(["true","false","base"]);
+  const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  function highlightLine(line) {
+    let out = "", i = 0;
+    let prevSig = "";       // last non-space token text, for spotting name= in calls
+    while (i < line.length) {
+      const ch = line[i];
+      if (ch === "#") { out += '<span class="cm">' + esc(line.slice(i)) + "</span>"; break; }
+      if (ch === '"' || ch === "'") {
+        let j = i + 1;
+        while (j < line.length && line[j] !== ch) { if (line[j] === "\\") j++; j++; }
+        out += '<span class="s">' + esc(line.slice(i, j + 1)) + "</span>"; i = j + 1; prevSig = "str"; continue;
+      }
+      if (/[0-9]/.test(ch)) {
+        let m = line.slice(i).match(/^[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?i?/);
+        out += '<span class="n">' + m[0] + "</span>"; i += m[0].length; prevSig = "num"; continue;
+      }
+      if (/[A-Za-z_\u0080-￿]/.test(ch)) {
+        let m = line.slice(i).match(/^[A-Za-z_\u0080-￿][A-Za-z0-9_$@\u0080-￿]*/);
+        const w = m[0];
+        const rest = line.slice(i + w.length);
+        const afterDot = out.endsWith(".");
+        let cls = null;
+        if (afterDot && (w === "base" || w === "info") && !/^\s*=[^=]/.test(rest)) cls = "b";
+        else if (KEYWORDS.has(w)) cls = "k";
+        else if (BUILTINS.has(w) && /^\s*\(/.test(rest)) cls = "b";
+        else if (OTHER.has(w)) cls = "x";
+        else if ((prevSig === "(" || prevSig === ",") && /^\s*=[^=]/.test(rest) && insideCall(out)) cls = "an";
+        out += cls ? '<span class="' + cls + '">' + esc(w) + "</span>" : esc(w);
+        i += w.length; prevSig = "id"; continue;
+      }
+      const two = line.slice(i, i + 2);
+      if (["==","!=","<=",">="].includes(two)) { out += '<span class="c">' + esc(two) + "</span>"; i += 2; prevSig = two; continue; }
+      if (two === "//") { out += '<span class="o">//</span>'; i += 2; prevSig = two; continue; }
+      if ("+-*/^%".includes(ch)) { out += '<span class="o">' + ch + "</span>"; i++; prevSig = ch; continue; }
+      if ("<>".includes(ch)) { out += '<span class="c">' + esc(ch) + "</span>"; i++; prevSig = ch; continue; }
+      if (ch !== " " && ch !== "\t") prevSig = ch;
+      out += esc(ch); i++;
+    }
+    return out;
+  }
+  // True when the text so far has an open '(' that follows a name - a call.
+  function insideCall(htmlSoFar) {
+    const text = htmlSoFar.replace(/<[^>]*>/g, "").replace(/&lt;|&gt;|&amp;/g, "x");
+    let depth = 0;
+    for (let k = text.length - 1; k >= 0; k--) {
+      const c = text[k];
+      if (c === ")") depth++;
+      else if (c === "(") {
+        if (depth === 0) return /[A-Za-z0-9_$@\u0080-￿]\s*$/.test(text.slice(0, k));
+        depth--;
+      }
+    }
+    return false;
+  }
+  // Input names - in a call (Add(x1=10)) and in a header (f(b=2)) - get
+  // the "an" colour.
+  document.querySelectorAll("pre.nc").forEach(pre => {
+    const lines = pre.textContent.split("\n");
+    const body = lines.map(highlightLine).join("\n");
+    const gutter = lines.map((_, k) => k + 1).join("\n");
+    pre.innerHTML = '<span class="gutter" aria-hidden="true">' + gutter + "</span><code>" + body + "</code>";
+  });
+})();
+
+/* ---------- call playground: the same two-pass rule as the interpreter ---------- */
+(function () {
+  const headerIn = document.getElementById("pgHeader");
+  const callIn = document.getElementById("pgCall");
+  const slotsEl = document.getElementById("pgSlots");
+  const stepsEl = document.getElementById("pgSteps");
+  const verdictEl = document.getElementById("pgVerdict");
+
+  // Splits text at top-level commas (not inside brackets or quotes).
+  function splitTop(text) {
+    const parts = []; let depth = 0, cur = "", quote = null;
+    for (const ch of text) {
+      if (quote) { cur += ch; if (ch === quote) quote = null; continue; }
+      if (ch === '"' || ch === "'") { quote = ch; cur += ch; continue; }
+      if ("([{".includes(ch)) depth++;
+      if (")]}".includes(ch)) depth--;
+      if (ch === "," && depth === 0) { parts.push(cur.trim()); cur = ""; continue; }
+      cur += ch;
+    }
+    if (cur.trim() !== "" || parts.length) parts.push(cur.trim());
+    return parts;
+  }
+  const NAME = /^[A-Za-z_\u0080-￿][A-Za-z0-9_$@\u0080-￿]*$/;
+  // "name = value" (single '=') or a plain value.
+  function splitNamed(part) {
+    const m = part.match(/^([A-Za-z_\u0080-￿][A-Za-z0-9_$@\u0080-￿]*)\s*=(?!=)\s*(.*)$/s);
+    return m ? { name: m[1], value: m[2] } : { name: "", value: part };
+  }
+  function parseHeader(text) {
+    const m = text.trim().match(/^function\s+(?:(\[[^\]]*\]|[^=(]+?)\s*=\s*)?([^\s(]+)\s*\((.*)\)\s*:?\s*$/s);
+    if (!m) return { error: "Write a header such as  function y = F(a, b=2):" };
+    const outputs = m[1] ? m[1].trim() + " = " : "";
+    m.splice(1, 1); // keep the old indexes: m[1] = name, m[2] = inputs
+    const inputs = [];
+    const inner = m[2].trim();
+    if (inner !== "") {
+      for (const part of splitTop(inner)) {
+        const p = splitNamed(part);
+        const name = p.name || p.value;
+        if (!NAME.test(name)) return { error: "'" + part + "' is not an input name" };
+        if (inputs.some(x => x.name === name)) return { error: "input '" + name + "' appears twice in the header of function '" + m[1] + "'" };
+        if (p.name && p.value.trim() === "") return { error: "input '" + name + "' of function '" + m[1] + "' has '=' but no default value after it" };
+        inputs.push({ name, def: p.name ? p.value.trim() : null });
+      }
+    }
+    return { fname: m[1], inputs, outputs };
+  }
+  function parseCall(text, fname) {
+    const m = text.trim().match(/^([^\s(]+)\s*\((.*)\)\s*;?\s*$/s);
+    if (!m) return { error: "Write a call such as  " + fname + "(1, b=2)" };
+    const inner = m[2].trim();
+    const args = inner === "" ? [] : splitTop(inner).map(splitNamed);
+    for (const a of args) if (a.value.trim() === "") return { error: (a.name ? "'" + a.name + " =' needs a value after it" : "an empty value between commas") };
+    return { name: m[1], args };
+  }
+  function signature(h) {
+    return h.outputs + h.fname + "(" + h.inputs.map(x => x.name + (x.def !== null ? "=" + x.def : "")).join(", ") + ")";
+  }
+  // Mirrors Parser::planBinding() in nc.exe.
+  function bind(h, args) {
+    const n = h.inputs.length, filled = new Array(n).fill(null), steps = [];
+    const label = "function '" + h.fname + "'";
+    let plain = 0;
+    for (const a of args) {
+      if (!a.name) { plain++; continue; }
+      const j = h.inputs.findIndex(x => x.name === a.name);
+      if (j < 0) return { filled, steps, error: label + ": there is no input named '" + a.name + "' - its inputs are " + h.inputs.map(x => x.name).join(", ") };
+      if (filled[j]) return { filled, steps, error: label + ": input '" + a.name + "' is given more than once" };
+      filled[j] = { value: a.value, how: "named" };
+      steps.push("Named: " + a.name + " = " + a.value);
+    }
+    const open = filled.filter(f => !f).length;
+    if (plain > open) {
+      const named = args.length - plain;
+      return { filled, steps, error: named === 0
+        ? label + ": it takes " + n + " input" + (n === 1 ? "" : "s") + ", but " + args.length + " value" + (args.length === 1 ? " was" : "s were") + " given"
+        : label + ": it takes " + n + " inputs; " + named + (named === 1 ? " is" : " are") + " given by name, which leaves " + open + " for " + plain + " plain value" + (plain === 1 ? "" : "s") };
+    }
+    let j = 0;
+    for (const a of args) {
+      if (a.name) continue;
+      while (filled[j]) j++;
+      filled[j] = { value: a.value, how: "plain" };
+      steps.push("Plain: " + a.value + " goes to the next empty input, " + h.inputs[j].name);
+    }
+    for (let k = 0; k < n; k++) {
+      if (filled[k]) continue;
+      if (h.inputs[k].def === null) {
+        filled[k] = { value: "?", how: "missing" };
+        return { filled, steps, error: label + ": input '" + h.inputs[k].name + "' was not given and has no default value" };
+      }
+      filled[k] = { value: h.inputs[k].def, how: "default" };
+      steps.push("Default: " + h.inputs[k].name + " is still empty, so it takes its default " + h.inputs[k].def);
+    }
+    return { filled, steps, error: null };
+  }
+  function render() {
+    slotsEl.innerHTML = ""; stepsEl.innerHTML = "";
+    const h = parseHeader(headerIn.value);
+    if (h.error) { verdictEl.className = "verdict bad"; verdictEl.textContent = h.error; return; }
+    const c = parseCall(callIn.value, h.fname);
+    if (c.error) { verdictEl.className = "verdict bad"; verdictEl.textContent = c.error; return; }
+    if (c.name !== h.fname) { verdictEl.className = "verdict bad"; verdictEl.textContent = "The call names '" + c.name + "', but the header defines '" + h.fname + "'."; return; }
+    const r = bind(h, c.args);
+    h.inputs.forEach((inp, k) => {
+      const f = r.filled[k];
+      const div = document.createElement("div");
+      div.className = "slot" + (f ? " " + f.how : "");
+      const how = !f ? "" : f.how === "named" ? "by name" : f.how === "plain" ? "plain value" : f.how === "default" ? "default" : "missing";
+      div.innerHTML = '<div class="nm"></div><div class="val"></div><div class="how"></div>';
+      div.querySelector(".nm").textContent = inp.name;
+      div.querySelector(".val").textContent = f ? f.value : "";
+      div.querySelector(".how").textContent = how;
+      slotsEl.appendChild(div);
+    });
+    r.steps.forEach(s => { const li = document.createElement("li"); li.textContent = s; stepsEl.appendChild(li); });
+    if (r.error) {
+      verdictEl.className = "verdict bad";
+      verdictEl.textContent = "Error: " + r.error + " (defined as " + signature(h) + ")";
+    } else {
+      verdictEl.className = "verdict ok";
+      verdictEl.textContent = h.inputs.length === 0 ? "The call fits: the function takes no inputs."
+        : "The call fits: " + h.inputs.map((x, k) => x.name + " = " + r.filled[k].value).join(", ");
+    }
+  }
+  headerIn.addEventListener("input", render);
+  callIn.addEventListener("input", render);
+  document.querySelectorAll(".presets button").forEach(b => b.addEventListener("click", () => {
+    headerIn.value = b.dataset.h; callIn.value = b.dataset.c; render();
+  }));
+  render();
+})();
+
+/* ---------- highlight the current section in the contents ---------- */
+(function () {
+  const links = Array.from(document.querySelectorAll("nav.toc a"));
+  const map = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+  const heads = Array.from(document.querySelectorAll("main h2[id]"));
+  // The current section is the last heading above a line 30% down the window.
+  let queued = false;
+  function update() {
+    queued = false;
+    const line = window.innerHeight * 0.3;
+    let current = heads[0];
+    for (const h of heads) if (h.getBoundingClientRect().top <= line) current = h;
+    links.forEach(l => l.classList.toggle("active", map.get(current.id) === l));
+  }
+  window.addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+})();
+</script>
+</body>
+</html>
